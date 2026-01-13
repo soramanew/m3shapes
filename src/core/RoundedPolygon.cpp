@@ -39,16 +39,16 @@ RoundedPolygonShape::RoundedPolygonShape(const std::vector<float>& vertices,
             "the same size as the number of vertices (vertices.size / 2)");
     }
 
-    const int n = static_cast<int>(vertices.size()) / 2;
+    const size_t n = vertices.size() / 2;
     std::vector<std::vector<Cubic>> corners;
     std::vector<RoundedCorner> roundedCorners;
 
     // Create rounded corners
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         const CornerRounding& vtxRounding =
             perVertexRounding ? (*perVertexRounding)[i] : rounding;
-        int prevIndex = ((i + n - 1) % n) * 2;
-        int nextIndex = ((i + 1) % n) * 2;
+        size_t prevIndex = ((i + n - 1) % n) * 2;
+        size_t nextIndex = ((i + 1) % n) * 2;
 
         roundedCorners.emplace_back(
             Point(vertices[prevIndex], vertices[prevIndex + 1]),
@@ -58,7 +58,7 @@ RoundedPolygonShape::RoundedPolygonShape(const std::vector<float>& vertices,
 
     // Calculate cut adjustments
     std::vector<std::pair<float, float>> cutAdjusts;
-    for (int ix = 0; ix < n; ++ix) {
+    for (size_t ix = 0; ix < n; ++ix) {
         float expectedRoundCut =
             roundedCorners[ix].expectedRoundCut() +
             roundedCorners[(ix + 1) % n].expectedRoundCut();
@@ -82,9 +82,9 @@ RoundedPolygonShape::RoundedPolygonShape(const std::vector<float>& vertices,
     }
 
     // Create beziers for each rounded corner
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         std::vector<float> allowedCuts(2);
-        for (int delta = 0; delta <= 1; ++delta) {
+        for (size_t delta = 0; delta <= 1; ++delta) {
             auto [roundCutRatio, cutRatio] =
                 cutAdjusts[(i + n - 1 + delta) % n];
             allowedCuts[delta] =
@@ -98,9 +98,9 @@ RoundedPolygonShape::RoundedPolygonShape(const std::vector<float>& vertices,
     }
 
     // Build features
-    for (int i = 0; i < n; ++i) {
-        int prevVtxIndex = (i + n - 1) % n;
-        int nextVtxIndex = (i + 1) % n;
+    for (size_t i = 0; i < n; ++i) {
+        size_t prevVtxIndex = (i + n - 1) % n;
+        size_t nextVtxIndex = (i + 1) % n;
         Point currVertex(vertices[i * 2], vertices[i * 2 + 1]);
         Point prevVertex(
             vertices[prevVtxIndex * 2], vertices[prevVtxIndex * 2 + 1]);
@@ -123,8 +123,10 @@ RoundedPolygonShape::RoundedPolygonShape(const std::vector<float>& vertices,
     }
 
     // Set center
-    if (centerX == std::numeric_limits<float>::lowest() ||
-        centerY == std::numeric_limits<float>::lowest()) {
+    constexpr float lowest = std::numeric_limits<float>::lowest();
+    constexpr float epsilon = 1e-30f;
+    if (std::abs(centerX - lowest) < epsilon ||
+        std::abs(centerY - lowest) < epsilon) {
         m_center = calculateCenterFromVertices(vertices);
     } else {
         m_center = Point(centerX, centerY);
@@ -322,15 +324,15 @@ Point RoundedPolygonShape::calculateCenterFromVertices(
         cumulativeX += vertices[i];
         cumulativeY += vertices[i + 1];
     }
-    int numPoints = static_cast<int>(vertices.size()) / 2;
+    float numPoints = static_cast<float>(vertices.size()) / 2.0f;
     return Point(cumulativeX / numPoints, cumulativeY / numPoints);
 }
 
 std::vector<float> RoundedPolygonShape::verticesFromNumVerts(
     int numVertices, float radius, float centerX, float centerY) {
-    std::vector<float> result(numVertices * 2);
-    for (int i = 0; i < numVertices; ++i) {
-        Point vertex = radialToCartesian(radius, FloatPi / numVertices * 2 * i);
+    std::vector<float> result(static_cast<size_t>(numVertices) * 2);
+    for (size_t i = 0; i < static_cast<size_t>(numVertices); ++i) {
+        Point vertex = radialToCartesian(radius, FloatPi / static_cast<float>(numVertices) * 2.0f * static_cast<float>(i));
         result[i * 2] = vertex.x + centerX;
         result[i * 2 + 1] = vertex.y + centerY;
     }

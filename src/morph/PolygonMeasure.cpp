@@ -73,13 +73,13 @@ std::pair<float, float> LengthMeasurer::closestProgressTo(const Cubic& cubic,
     float remainder = threshold;
     Point prev(cubic.anchor0X(), cubic.anchor0Y());
 
-    for (int i = 1; i <= Segments; ++i) {
-        float progress = static_cast<float>(i) / Segments;
+    for (size_t i = 1; i <= static_cast<size_t>(Segments); ++i) {
+        float progress = static_cast<float>(i) / static_cast<float>(Segments);
         Point point = cubic.pointOnCurve(progress);
         float segment = (point - prev).getDistance();
 
         if (segment >= remainder) {
-            return { progress - (1.0f - remainder / segment) / Segments,
+            return { progress - (1.0f - remainder / segment) / static_cast<float>(Segments),
                 threshold };
         }
 

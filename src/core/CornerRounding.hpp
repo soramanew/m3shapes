@@ -2,6 +2,8 @@
 
 #define CORNERROUNDING_H
 
+#include <cmath>
+
 namespace RoundedPolygon {
 
 /**
@@ -25,7 +27,9 @@ struct CornerRounding {
         , smoothing(smoothing) {}
 
     [[nodiscard]] bool operator==(const CornerRounding& other) const {
-        return radius == other.radius && smoothing == other.smoothing;
+        constexpr float epsilon = 1e-6f;
+        return std::abs(radius - other.radius) < epsilon &&
+               std::abs(smoothing - other.smoothing) < epsilon;
     }
 
     [[nodiscard]] bool operator!=(const CornerRounding& other) const {

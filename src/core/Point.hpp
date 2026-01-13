@@ -80,7 +80,8 @@ struct Point {
     }
 
     [[nodiscard]] bool operator==(const Point& other) const {
-        return x == other.x && y == other.y;
+        constexpr float epsilon = 1e-6f;
+        return std::abs(x - other.x) < epsilon && std::abs(y - other.y) < epsilon;
     }
 
     [[nodiscard]] bool operator!=(const Point& other) const {

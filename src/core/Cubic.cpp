@@ -152,7 +152,7 @@ Cubic Cubic::reverse() const {
 
 Cubic Cubic::transformed(const PointTransformer& f) const {
     std::array<float, 8> newPoints;
-    for (int i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         auto result = f(m_points[i * 2], m_points[i * 2 + 1]);
         newPoints[i * 2] = result.x;
         newPoints[i * 2 + 1] = result.y;
@@ -162,7 +162,7 @@ Cubic Cubic::transformed(const PointTransformer& f) const {
 
 Cubic Cubic::operator+(const Cubic& other) const {
     std::array<float, 8> result;
-    for (int i = 0; i < 8; ++i) {
+    for (size_t i = 0; i < 8; ++i) {
         result[i] = m_points[i] + other.m_points[i];
     }
     return Cubic(result);
@@ -170,7 +170,7 @@ Cubic Cubic::operator+(const Cubic& other) const {
 
 Cubic Cubic::operator*(float scalar) const {
     std::array<float, 8> result;
-    for (int i = 0; i < 8; ++i) {
+    for (size_t i = 0; i < 8; ++i) {
         result[i] = m_points[i] * scalar;
     }
     return Cubic(result);
@@ -226,7 +226,7 @@ Cubic Cubic::empty(float x0, float y0) {
 // MutableCubic implementation
 
 void MutableCubic::transform(const PointTransformer& f) {
-    for (int i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 4; ++i) {
         auto result = f(m_points[i * 2], m_points[i * 2 + 1]);
         m_points[i * 2] = result.x;
         m_points[i * 2 + 1] = result.y;
@@ -237,7 +237,7 @@ void MutableCubic::interpolate(
     const Cubic& c1, const Cubic& c2, float progress) {
     const auto& p1 = c1.points();
     const auto& p2 = c2.points();
-    for (int i = 0; i < 8; ++i) {
+    for (size_t i = 0; i < 8; ++i) {
         m_points[i] = RoundedPolygon::interpolate(p1[i], p2[i], progress);
     }
 }

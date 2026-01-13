@@ -23,7 +23,7 @@ std::vector<Cubic> Morph::asCubics(float progress) const {
 
         // Interpolate all 8 points
         std::array<float, 8> points;
-        for (int j = 0; j < 8; ++j) {
+        for (size_t j = 0; j < 8; ++j) {
             points[j] = interpolate(
                 startCubic.points()[j], endCubic.points()[j], progress);
         }

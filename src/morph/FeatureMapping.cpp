@@ -81,7 +81,7 @@ std::vector<std::pair<float, float>> doMapping(
     for (const auto* f1 : features1) {
         for (const auto* f2 : features2) {
             float d = featureDistSquared(f1->feature, f2->feature);
-            if (d != std::numeric_limits<float>::max()) {
+            if (d < std::numeric_limits<float>::max()) {
                 distanceVertexList.push_back({ d, f1, f2 });
             }
         }
