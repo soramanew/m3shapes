@@ -101,6 +101,7 @@ void MaterialShapeItem::onMorphFinished() {
 void MaterialShapeItem::setColor(const QColor& color) {
     if (m_color != color) {
         m_color = color;
+        m_geometryDirty = true;
         emit colorChanged();
         update();
     }
