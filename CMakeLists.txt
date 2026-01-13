@@ -22,6 +22,7 @@ endif()
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml)
 
 qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
 
 # Core library
 add_library(m3shapes_core STATIC
@@ -94,6 +95,21 @@ qt_add_qml_module(m3shapesplugin
     OUTPUT_DIRECTORY
         ${QT_QML_OUTPUT_DIRECTORY}/M3Shapes
 )
+
+qt_query_qml_module(m3shapesplugin
+    URI module_uri
+    PLUGIN_TARGET module_plugin_target
+    TARGET_PATH module_target_path
+    QMLDIR module_qmldir
+    TYPEINFO module_typeinfo
+)
+
+set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
+set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
+install(TARGETS m3shapesplugin LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
+install(TARGETS "${module_plugin_target}" LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
+install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
+install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
 target_include_directories(m3shapesplugin PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
