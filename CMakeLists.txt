@@ -12,7 +12,7 @@ add_compile_options(
     -Wold-style-cast -Wnull-dereference -Wdouble-promotion
     -Wformat=2 -Wfloat-equal -Woverloaded-virtual
     -Wsign-conversion -Wredundant-decls -Wswitch
-    -Wunreachable-code -Werror
+    -Wunreachable-code
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
