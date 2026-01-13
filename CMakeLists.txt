@@ -86,7 +86,7 @@ if(NOT DEFINED QT_QML_OUTPUT_DIRECTORY)
     set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
 endif()
 
-qt_add_qml_module(m3shapesplugin
+qt_add_qml_module(m3shapes
     URI M3Shapes
     VERSION 1.0
     SOURCES
@@ -96,7 +96,7 @@ qt_add_qml_module(m3shapesplugin
         ${QT_QML_OUTPUT_DIRECTORY}/M3Shapes
 )
 
-qt_query_qml_module(m3shapesplugin
+qt_query_qml_module(m3shapes
     URI module_uri
     PLUGIN_TARGET module_plugin_target
     TARGET_PATH module_target_path
@@ -106,17 +106,17 @@ qt_query_qml_module(m3shapesplugin
 
 set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
 set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
-install(TARGETS m3shapesplugin LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
+install(TARGETS m3shapes LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
 install(TARGETS "${module_plugin_target}" LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
 install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
 install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
-target_include_directories(m3shapesplugin PUBLIC
+target_include_directories(m3shapes PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/qml
 )
 
-target_link_libraries(m3shapesplugin PUBLIC
+target_link_libraries(m3shapes PUBLIC
     Qt::Quick
     Qt::Qml
     m3shapes_core
@@ -139,7 +139,7 @@ qt_add_qml_module(shape_gallery
 target_link_libraries(shape_gallery PRIVATE
     Qt6::Quick
     Qt6::Qml
-    m3shapesplugin
+    m3shapes
 )
 
 # Set up import paths
