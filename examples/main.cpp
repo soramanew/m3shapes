@@ -1,14 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <QSurfaceFormat>
 #include <QQuickWindow>
+#include <QSurfaceFormat>
 
 int main(int argc, char* argv[]) {
     // Enable MSAA for antialiased edges
-    QSurfaceFormat format;
-    format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format);
+    // QSurfaceFormat format;
+    // format.setSamples(4);
+    // QSurfaceFormat::setDefaultFormat(format);
 
     QGuiApplication app(argc, argv);
 
@@ -18,7 +18,8 @@ int main(int argc, char* argv[]) {
     engine.addImportPath(QStringLiteral("qrc:/"));
 
     // Load the QML file
-    const QUrl url(QStringLiteral("qrc:/qt/qml/ShapeGalleryApp/examples/ShapeGallery.qml"));
+    const QUrl url(QStringLiteral(
+        "qrc:/qt/qml/ShapeGalleryApp/examples/ShapeGallery.qml"));
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated, &app,

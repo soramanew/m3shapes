@@ -1,7 +1,7 @@
 #include "MaterialShapeItem.hpp"
-#include <QSGFlatColorMaterial>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
+#include <QSGVertexColorMaterial>
 #include <cmath>
 
 using namespace RoundedPolygon;
@@ -65,8 +65,8 @@ void MaterialShapeItem::setAnimationEasing(const QEasingCurve& easing) {
 }
 
 void MaterialShapeItem::startMorph(Shape from, Shape to) {
-    auto fromShape = MaterialShapes::getShape(
-        static_cast<MaterialShapes::ShapeType>(from));
+    auto fromShape =
+        MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(from));
     auto toShape =
         MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(to));
 
@@ -141,7 +141,8 @@ void MaterialShapeItem::setShapeRotation(float rotation) {
     }
 }
 
-void MaterialShapeItem::buildGeometry(QSGGeometry* geometry) {
+void MaterialShapeItem::buildGeometry(
+    QSGGeometry* geometry, const QColor& fillColor) {
     if (m_morph == nullptr) {
         geometry->allocate(0, 0);
         return;
@@ -154,33 +155,26 @@ void MaterialShapeItem::buildGeometry(QSGGeometry* geometry) {
         return;
     }
 
-    constexpr int segmentsPerCubic = 8;
-    int outlineVertices = static_cast<int>(cubics.size()) * segmentsPerCubic;
-    int totalVertices = 1 + outlineVertices + 1;
-    int numTriangles = outlineVertices;
-    int totalIndices = numTriangles * 3;
-
-    geometry->allocate(totalVertices, totalIndices);
-
-    auto* vertices = geometry->vertexDataAsPoint2D();
-    auto* indices = geometry->indexDataAsUShort();
+    constexpr int segmentsPerCubic = 16;
+    int edgeVertexCount = static_cast<int>(cubics.size()) * segmentsPerCubic;
 
     float itemWidth = static_cast<float>(width());
     float itemHeight = static_cast<float>(height());
     float size = std::min(itemWidth, itemHeight);
-
     float centerX = itemWidth / 2.0f;
     float centerY = itemHeight / 2.0f;
 
     float cosR = std::cos(m_shapeRotation * FloatPi / 180.0f);
     float sinR = std::sin(m_shapeRotation * FloatPi / 180.0f);
 
-    vertices[0].set(centerX, centerY);
+    // Build edge points first
+    std::vector<std::pair<float, float>> edgePoints;
+    edgePoints.reserve(static_cast<size_t>(edgeVertexCount));
 
-    int vertexIndex = 1;
     for (const auto& cubic : cubics) {
         for (int j = 0; j < segmentsPerCubic; ++j) {
-            float t = static_cast<float>(j) / segmentsPerCubic;
+            float t =
+                static_cast<float>(j) / static_cast<float>(segmentsPerCubic);
             Point pt = cubic.pointOnCurve(t);
 
             float x = (pt.x - 0.5f) * size;
@@ -189,22 +183,125 @@ void MaterialShapeItem::buildGeometry(QSGGeometry* geometry) {
             float rotX = x * cosR - y * sinR;
             float rotY = x * sinR + y * cosR;
 
-            vertices[vertexIndex].set(centerX + rotX, centerY + rotY);
-            vertexIndex++;
+            edgePoints.emplace_back(centerX + rotX, centerY + rotY);
         }
     }
 
-    vertices[vertexIndex] = vertices[1];
+    // Calculate normals and outer fringe points
+    std::vector<std::pair<float, float>> outerPoints;
+    outerPoints.reserve(edgePoints.size());
 
-    for (int i = 0; i < numTriangles; ++i) {
-        indices[i * 3] = 0;
-        indices[i * 3 + 1] = static_cast<unsigned short>(i + 1);
-        indices[i * 3 + 2] = static_cast<unsigned short>(i + 2);
+    constexpr float aaWidth = 1.0f; // Antialiasing fringe width in pixels
+
+    for (size_t i = 0; i < edgePoints.size(); ++i) {
+        size_t prev = (i + edgePoints.size() - 1) % edgePoints.size();
+        size_t next = (i + 1) % edgePoints.size();
+
+        // Calculate tangent from neighboring points
+        float tx = edgePoints[next].first - edgePoints[prev].first;
+        float ty = edgePoints[next].second - edgePoints[prev].second;
+
+        // Normal is perpendicular to tangent (pointing outward)
+        float nx = -ty;
+        float ny = tx;
+
+        // Normalize
+        float len = std::sqrt(nx * nx + ny * ny);
+        if (len > 0.0001f) {
+            nx /= len;
+            ny /= len;
+        }
+
+        // Check if normal points outward (away from center)
+        float toCenterX = centerX - edgePoints[i].first;
+        float toCenterY = centerY - edgePoints[i].second;
+        float dot = nx * toCenterX + ny * toCenterY;
+        if (dot > 0) {
+            nx = -nx;
+            ny = -ny;
+        }
+
+        // Offset outward by aaWidth pixels
+        outerPoints.emplace_back(edgePoints[i].first + nx * aaWidth,
+            edgePoints[i].second + ny * aaWidth);
+    }
+
+    // Geometry layout:
+    // Vertex 0: center
+    // Vertices 1 to edgeVertexCount: edge vertices (full alpha)
+    // Vertices edgeVertexCount+1 to 2*edgeVertexCount: outer fringe (zero
+    // alpha) Plus closing vertices
+
+    int totalVertices = 1 + edgeVertexCount + 1 + edgeVertexCount + 1;
+
+    // Triangles:
+    // Fill: edgeVertexCount triangles (center -> edge[i] -> edge[i+1])
+    // Fringe: 2 * edgeVertexCount triangles
+    int fillTriangles = edgeVertexCount;
+    int fringeTriangles = edgeVertexCount * 2;
+    int totalIndices = (fillTriangles + fringeTriangles) * 3;
+
+    geometry->allocate(totalVertices, totalIndices);
+
+    auto* vertices = geometry->vertexDataAsColoredPoint2D();
+    auto* indices = geometry->indexDataAsUShort();
+
+    // Color with full alpha for fill
+    uchar r = static_cast<uchar>(fillColor.red());
+    uchar g = static_cast<uchar>(fillColor.green());
+    uchar b = static_cast<uchar>(fillColor.blue());
+    uchar a = static_cast<uchar>(fillColor.alpha());
+
+    // Center vertex
+    vertices[0].set(centerX, centerY, r, g, b, a);
+
+    // Edge vertices (full alpha)
+    for (int i = 0; i < edgeVertexCount; ++i) {
+        vertices[1 + i].set(edgePoints[static_cast<size_t>(i)].first,
+            edgePoints[static_cast<size_t>(i)].second, r, g, b, a);
+    }
+    // Closing edge vertex
+    vertices[1 + edgeVertexCount] = vertices[1];
+
+    // Outer fringe vertices (zero alpha, zero RGB for premultiplied blending)
+    int outerStart = 1 + edgeVertexCount + 1;
+    for (int i = 0; i < edgeVertexCount; ++i) {
+        vertices[outerStart + i].set(outerPoints[static_cast<size_t>(i)].first,
+            outerPoints[static_cast<size_t>(i)].second, 0, 0, 0, 0);
+    }
+    // Closing outer vertex
+    vertices[outerStart + edgeVertexCount] = vertices[outerStart];
+
+    int idx = 0;
+
+    // Fill triangles (center -> edge)
+    for (int i = 0; i < edgeVertexCount; ++i) {
+        indices[idx++] = 0;
+        indices[idx++] = static_cast<unsigned short>(1 + i);
+        indices[idx++] = static_cast<unsigned short>(1 + i + 1);
+    }
+
+    // Fringe triangles (edge -> outer)
+    for (int i = 0; i < edgeVertexCount; ++i) {
+        int e0 = 1 + i;
+        int e1 = 1 + i + 1;
+        int o0 = outerStart + i;
+        int o1 = outerStart + i + 1;
+
+        // Triangle 1: edge[i], outer[i], edge[i+1]
+        indices[idx++] = static_cast<unsigned short>(e0);
+        indices[idx++] = static_cast<unsigned short>(o0);
+        indices[idx++] = static_cast<unsigned short>(e1);
+
+        // Triangle 2: outer[i], outer[i+1], edge[i+1]
+        indices[idx++] = static_cast<unsigned short>(o0);
+        indices[idx++] = static_cast<unsigned short>(o1);
+        indices[idx++] = static_cast<unsigned short>(e1);
     }
 }
 
-QSGNode* MaterialShapeItem::updatePaintNode(QSGNode* oldNode,
-    UpdatePaintNodeData* /*updatePaintNodeData*/) {
+QSGNode* MaterialShapeItem::updatePaintNode(
+    QSGNode* oldNode, UpdatePaintNodeData* /*updatePaintNodeData*/) {
     if (width() <= 0 || height() <= 0) {
         delete oldNode;
         return nullptr;
@@ -216,26 +313,19 @@ QSGNode* MaterialShapeItem::updatePaintNode(QSGNode* oldNode,
         node->setFlag(QSGNode::OwnsMaterial);
         node->setFlag(QSGNode::OwnsGeometry);
 
-        auto* material = new QSGFlatColorMaterial();
-        material->setColor(m_color);
+        auto* material = new QSGVertexColorMaterial();
         node->setMaterial(material);
 
-        auto* geometry =
-            new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 0, 0);
+        auto* geometry = new QSGGeometry(
+            QSGGeometry::defaultAttributes_ColoredPoint2D(), 0, 0);
         geometry->setDrawingMode(QSGGeometry::DrawTriangles);
         node->setGeometry(geometry);
 
         m_geometryDirty = true;
     }
 
-    auto* material = dynamic_cast<QSGFlatColorMaterial*>(node->material());
-    if (material != nullptr && material->color() != m_color) {
-        material->setColor(m_color);
-        node->markDirty(QSGNode::DirtyMaterial);
-    }
-
     if (m_geometryDirty) {
-        buildGeometry(node->geometry());
+        buildGeometry(node->geometry(), m_color);
         node->markDirty(QSGNode::DirtyGeometry);
         m_geometryDirty = false;
     }

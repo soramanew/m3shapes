@@ -140,7 +140,7 @@ private slots:
     void onMorphFinished();
 
 private:
-    void buildGeometry(QSGGeometry* geometry);
+    void buildGeometry(QSGGeometry* geometry, const QColor& fillColor);
     void startMorph(Shape from, Shape to);
     void setMorphProgress(float progress);
 
