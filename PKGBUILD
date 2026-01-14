@@ -1,8 +1,8 @@
-# m3shapes
+# qt6-m3shapes
 
 # Maintainer: Soramane <soramane32 at gmail dot com>
 
-_pkgname='m3shapes'
+_pkgname='qt6-m3shapes'
 pkgname="$_pkgname-git"
 pkgver=r6.252af33
 pkgrel=1
