@@ -161,7 +161,7 @@ QPainterPath MaterialShapeItem::buildPath() const {
         float y = (py - 0.5f) * size;
         float rotX = x * cosR - y * sinR;
         float rotY = x * sinR + y * cosR;
-        return QPointF(centerX + rotX, centerY + rotY);
+        return QPointF(static_cast<qreal>(centerX + rotX), static_cast<qreal>(centerY + rotY));
     };
 
     // Build path from cubics (like Android's toPath())
@@ -195,7 +195,7 @@ void MaterialShapeItem::paint(QPainter* painter) {
 
     // Stroke
     if (m_strokeWidth > 0 && m_strokeColor.alpha() > 0) {
-        painter->setPen(QPen(m_strokeColor, m_strokeWidth));
+        painter->setPen(QPen(m_strokeColor, static_cast<qreal>(m_strokeWidth)));
         painter->setBrush(Qt::NoBrush);
         painter->drawPath(path);
     }
