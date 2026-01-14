@@ -125,24 +125,28 @@ target_link_libraries(m3shapes PUBLIC
 )
 
 # Example application
-qt_add_executable(shape_gallery
-    examples/main.cpp
-)
+option(M3SHAPES_BUILD_EXAMPLES "Build example applications" OFF)
 
-qt_add_qml_module(shape_gallery
-    URI ShapeGalleryApp
-    VERSION 1.0
-    QML_FILES
-        examples/ShapeGallery.qml
-)
+if(M3SHAPES_BUILD_EXAMPLES)
+    qt_add_executable(shape_gallery
+        examples/main.cpp
+    )
 
-target_link_libraries(shape_gallery PRIVATE
-    Qt6::Quick
-    Qt6::Qml
-    m3shapes
-)
+    qt_add_qml_module(shape_gallery
+        URI ShapeGalleryApp
+        VERSION 1.0
+        QML_FILES
+            examples/ShapeGallery.qml
+    )
 
-# Set up import paths
-set_target_properties(shape_gallery PROPERTIES
-    QT_QML_IMPORT_PATH "${CMAKE_BINARY_DIR}"
-)
+    target_link_libraries(shape_gallery PRIVATE
+        Qt6::Quick
+        Qt6::Qml
+        m3shapes
+    )
+
+    # Set up import paths
+    set_target_properties(shape_gallery PROPERTIES
+        QT_QML_IMPORT_PATH "${CMAKE_BINARY_DIR}"
+    )
+endif()
