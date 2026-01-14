@@ -66,6 +66,8 @@ public:
     Q_ENUM(Shape)
 
     Q_PROPERTY(Shape shape READ shape WRITE setShape NOTIFY shapeChanged)
+    Q_PROPERTY(Shape fromShape READ fromShape WRITE setFromShape NOTIFY fromShapeChanged)
+    Q_PROPERTY(Shape toShape READ toShape WRITE setToShape NOTIFY toShapeChanged)
     Q_PROPERTY(int animationDuration READ animationDuration WRITE
             setAnimationDuration NOTIFY animationDurationChanged)
     Q_PROPERTY(QEasingCurve animationEasing READ animationEasing WRITE
@@ -87,6 +89,14 @@ public:
     [[nodiscard]] Shape shape() const { return m_targetShape; }
 
     void setShape(Shape shape);
+
+    [[nodiscard]] Shape fromShape() const { return m_fromShape; }
+
+    void setFromShape(Shape shape);
+
+    [[nodiscard]] Shape toShape() const { return m_toShape; }
+
+    void setToShape(Shape shape);
 
     [[nodiscard]] int animationDuration() const { return m_animationDuration; }
 
@@ -120,8 +130,12 @@ public:
 
     [[nodiscard]] float morphProgress() const { return m_morphProgress; }
 
+    void setMorphProgress(float progress);
+
 signals:
     void shapeChanged();
+    void fromShapeChanged();
+    void toShapeChanged();
     void animationDurationChanged();
     void animationEasingChanged();
     void colorChanged();
@@ -141,10 +155,12 @@ private slots:
 private:
     QPainterPath buildPath() const;
     void startMorph(Shape from, Shape to);
-    void setMorphProgress(float progress);
+    void rebuildMorph();
 
     Shape m_currentShape = Circle;
     Shape m_targetShape = Circle;
+    Shape m_fromShape = Circle;
+    Shape m_toShape = Circle;
     int m_animationDuration = 350;
     QEasingCurve m_animationEasing;
     float m_morphProgress = 1.0f;

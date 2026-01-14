@@ -63,11 +63,52 @@ MaterialShape {
 }
 ```
 
+### Manual Morph Control
+
+For full control over morphing, use `fromShape`, `toShape`, and `morphProgress`:
+
+```qml
+MaterialShape {
+    id: manualShape
+    width: 200
+    height: 200
+    fromShape: MaterialShape.Circle
+    toShape: MaterialShape.Heart
+    morphProgress: slider.value
+    color: "purple"
+}
+
+Slider {
+    id: slider
+    from: 0
+    to: 1
+    value: 0.5
+}
+```
+
+### Rotation
+
+Shapes can be rotated while maintaining their bounds:
+
+```qml
+MaterialShape {
+    width: 200
+    height: 200
+    shape: MaterialShape.Star
+    shapeRotation: 45  // degrees
+}
+```
+
+The shape is automatically scaled to fit within the item bounds at any rotation angle.
+
 ## Properties
 
 | Property            | Type       | Default     | Description                           |
 | ------------------- | ---------- | ----------- | ------------------------------------- |
-| `shape`             | Shape enum | Circle      | The target shape                      |
+| `shape`             | Shape enum | Circle      | Target shape (auto-animates on change)|
+| `fromShape`         | Shape enum | Circle      | Start shape for manual morphing       |
+| `toShape`           | Shape enum | Circle      | End shape for manual morphing         |
+| `morphProgress`     | float      | 1.0         | Morph progress 0-1 (read/write)       |
 | `color`             | color      | black       | Fill color                            |
 | `implicitSize`      | real       | 0           | Sets implicitWidth and implicitHeight |
 | `strokeColor`       | color      | transparent | Stroke color                          |
@@ -75,7 +116,6 @@ MaterialShape {
 | `shapeRotation`     | float      | 0           | Rotation in degrees                   |
 | `animationDuration` | int        | 350         | Morph duration in ms                  |
 | `animationEasing`   | easing     | spring-like | Animation easing curve                |
-| `morphProgress`     | float      | (read-only) | Current morph progress 0-1            |
 
 ## Available Shapes
 

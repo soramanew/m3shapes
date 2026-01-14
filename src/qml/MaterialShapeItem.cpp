@@ -41,7 +41,8 @@ void MaterialShapeItem::setShape(Shape shape) {
             m_animation->stop();
         }
 
-        startMorph(m_currentShape, shape);
+        // Start from toShape (handles transition from manual to auto mode)
+        startMorph(m_toShape, shape);
     }
 }
 
@@ -61,7 +62,36 @@ void MaterialShapeItem::setAnimationEasing(const QEasingCurve& easing) {
     }
 }
 
+void MaterialShapeItem::setFromShape(Shape shape) {
+    if (m_fromShape != shape) {
+        m_fromShape = shape;
+        emit fromShapeChanged();
+        rebuildMorph();
+    }
+}
+
+void MaterialShapeItem::setToShape(Shape shape) {
+    if (m_toShape != shape) {
+        m_toShape = shape;
+        emit toShapeChanged();
+        rebuildMorph();
+    }
+}
+
+void MaterialShapeItem::rebuildMorph() {
+    auto from = MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(m_fromShape));
+    auto to = MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(m_toShape));
+    m_morph = std::make_unique<Morph>(from, to);
+    update();
+}
+
 void MaterialShapeItem::startMorph(Shape from, Shape to) {
+    // Sync manual morph properties
+    m_fromShape = from;
+    m_toShape = to;
+    emit fromShapeChanged();
+    emit toShapeChanged();
+
     auto fromShape =
         MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(from));
     auto toShape =
@@ -89,7 +119,9 @@ void MaterialShapeItem::setMorphProgress(float progress) {
 
 void MaterialShapeItem::onMorphFinished() {
     m_currentShape = m_targetShape;
+    m_fromShape = m_targetShape;
     m_morphProgress = 1.0f;
+    emit fromShapeChanged();
     update();
 }
 

@@ -253,5 +253,66 @@ ApplicationWindow {
                 }
             }
         }
+
+        // Manual morph controls
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 20
+
+            Label {
+                text: "From:"
+                color: "#e0e0e0"
+            }
+
+            ComboBox {
+                id: fromShapeCombo
+                Layout.preferredWidth: 120
+                model: window.shapeNames
+                currentIndex: 0
+                onCurrentIndexChanged: manualShape.fromShape = window.shapeEnums[currentIndex]
+            }
+
+            Label {
+                text: "To:"
+                color: "#e0e0e0"
+            }
+
+            ComboBox {
+                id: toShapeCombo
+                Layout.preferredWidth: 120
+                model: window.shapeNames
+                currentIndex: 34
+                onCurrentIndexChanged: manualShape.toShape = window.shapeEnums[currentIndex]
+            }
+
+            Label {
+                text: "Progress:"
+                color: "#e0e0e0"
+            }
+
+            Slider {
+                id: progressSlider
+                Layout.fillWidth: true
+                from: 0
+                to: 1
+                value: 0.5
+                onValueChanged: manualShape.morphProgress = value
+            }
+
+            Label {
+                text: Math.round(progressSlider.value * 100) + "%"
+                color: "#e0e0e0"
+                Layout.preferredWidth: 40
+            }
+
+            MaterialShape {
+                id: manualShape
+                implicitSize: 50
+                fromShape: window.shapeEnums[fromShapeCombo.currentIndex]
+                toShape: window.shapeEnums[toShapeCombo.currentIndex]
+                morphProgress: progressSlider.value
+                color: Qt.hsla(0.8, 0.7, 0.6, 1.0)
+            }
+        }
     }
 }
