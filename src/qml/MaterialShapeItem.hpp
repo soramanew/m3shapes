@@ -3,9 +3,10 @@
 #include "../morph/Morph.hpp"
 #include "../shapes/MaterialShapes.hpp"
 #include <QEasingCurve>
+#include <QPainterPath>
+#include <QPainter>
 #include <QPropertyAnimation>
-#include <QQuickItem>
-#include <QSGGeometry>
+#include <QQuickPaintedItem>
 #include <memory>
 
 /**
@@ -19,7 +20,7 @@
  *       animationEasing: Easing.OutBounce
  *   }
  */
-class MaterialShapeItem : public QQuickItem {
+class MaterialShapeItem : public QQuickPaintedItem {
     Q_OBJECT
     QML_ELEMENT
     QML_NAMED_ELEMENT(MaterialShape)
@@ -130,16 +131,15 @@ signals:
     void shapeRotationChanged();
     void morphProgressChanged();
 
-protected:
-    QSGNode* updatePaintNode(
-        QSGNode* oldNode, UpdatePaintNodeData* updatePaintNodeData) override;
+public:
+    void paint(QPainter* painter) override;
 
 private slots:
     void onAnimationValueChanged(const QVariant& value);
     void onMorphFinished();
 
 private:
-    void buildGeometry(QSGGeometry* geometry, const QColor& fillColor);
+    QPainterPath buildPath() const;
     void startMorph(Shape from, Shape to);
     void setMorphProgress(float progress);
 
@@ -156,5 +156,4 @@ private:
 
     std::unique_ptr<RoundedPolygon::Morph> m_morph;
     QPropertyAnimation* m_animation = nullptr;
-    bool m_geometryDirty = true;
 };
