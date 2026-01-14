@@ -79,8 +79,6 @@ public:
             strokeColorChanged)
     Q_PROPERTY(float strokeWidth READ strokeWidth WRITE setStrokeWidth NOTIFY
             strokeWidthChanged)
-    Q_PROPERTY(float shapeRotation READ shapeRotation WRITE setShapeRotation
-            NOTIFY shapeRotationChanged)
     Q_PROPERTY(float morphProgress READ morphProgress WRITE setMorphProgress
             NOTIFY morphProgressChanged)
 
@@ -124,10 +122,6 @@ public:
 
     void setStrokeWidth(float width);
 
-    [[nodiscard]] float shapeRotation() const { return m_shapeRotation; }
-
-    void setShapeRotation(float rotation);
-
     [[nodiscard]] float morphProgress() const { return m_morphProgress; }
 
     void setMorphProgress(float progress);
@@ -142,7 +136,6 @@ signals:
     void implicitSizeChanged();
     void strokeColorChanged();
     void strokeWidthChanged();
-    void shapeRotationChanged();
     void morphProgressChanged();
 
 public:
@@ -168,7 +161,6 @@ private:
     qreal m_implicitSize = 0.0;
     QColor m_strokeColor = Qt::transparent;
     float m_strokeWidth = 0.0f;
-    float m_shapeRotation = 0.0f;
 
     std::unique_ptr<RoundedPolygon::Morph> m_morph;
     QPropertyAnimation* m_animation = nullptr;

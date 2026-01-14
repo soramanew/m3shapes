@@ -86,21 +86,6 @@ Slider {
 }
 ```
 
-### Rotation
-
-Shapes can be rotated while maintaining their bounds:
-
-```qml
-MaterialShape {
-    width: 200
-    height: 200
-    shape: MaterialShape.Star
-    shapeRotation: 45  // degrees
-}
-```
-
-The shape is automatically scaled to fit within the item bounds at any rotation angle.
-
 ## Properties
 
 | Property            | Type       | Default     | Description                           |
@@ -113,7 +98,6 @@ The shape is automatically scaled to fit within the item bounds at any rotation 
 | `implicitSize`      | real       | 0           | Sets implicitWidth and implicitHeight |
 | `strokeColor`       | color      | transparent | Stroke color                          |
 | `strokeWidth`       | float      | 0           | Stroke width                          |
-| `shapeRotation`     | float      | 0           | Rotation in degrees                   |
 | `animationDuration` | int        | 350         | Morph duration in ms                  |
 | `animationEasing`   | easing     | spring-like | Animation easing curve                |
 

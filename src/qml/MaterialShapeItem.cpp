@@ -1,6 +1,5 @@
 #include "MaterialShapeItem.hpp"
 #include <QPainter>
-#include <cmath>
 
 using namespace RoundedPolygon;
 
@@ -158,14 +157,6 @@ void MaterialShapeItem::setStrokeWidth(float width) {
     }
 }
 
-void MaterialShapeItem::setShapeRotation(float rotation) {
-    if (!qFuzzyCompare(m_shapeRotation, rotation)) {
-        m_shapeRotation = rotation;
-        emit shapeRotationChanged();
-        update();
-    }
-}
-
 QPainterPath MaterialShapeItem::buildPath() const {
     QPainterPath path;
 
@@ -185,15 +176,10 @@ QPainterPath MaterialShapeItem::buildPath() const {
     float centerX = itemWidth / 2.0f;
     float centerY = itemHeight / 2.0f;
 
-    float cosR = std::cos(m_shapeRotation * FloatPi / 180.0f);
-    float sinR = std::sin(m_shapeRotation * FloatPi / 180.0f);
-
     auto transformPoint = [&](float px, float py) -> QPointF {
-        float x = (px - 0.5f) * size;
-        float y = (py - 0.5f) * size;
-        float rotX = x * cosR - y * sinR;
-        float rotY = x * sinR + y * cosR;
-        return QPointF(static_cast<qreal>(centerX + rotX), static_cast<qreal>(centerY + rotY));
+        float x = centerX + (px - 0.5f) * size;
+        float y = centerY + (py - 0.5f) * size;
+        return QPointF(static_cast<qreal>(x), static_cast<qreal>(y));
     };
 
     // Build path from cubics (like Android's toPath())

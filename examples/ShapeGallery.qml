@@ -53,7 +53,7 @@ ApplicationWindow {
                 implicitSize: Math.min(parent.width, parent.height) * 0.8
                 shape: MaterialShape.Circle
                 color: Qt.hsla(0.6, 0.7, 0.6, 1.0)
-                shapeRotation: autoRotateCheckbox.checked ? continuousRotation : rotationSlider.value
+                rotation: autoRotateCheckbox.checked ? continuousRotation : rotationSlider.value
 
                 property real continuousRotation: 0
 
