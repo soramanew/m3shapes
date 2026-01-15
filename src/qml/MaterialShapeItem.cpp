@@ -40,6 +40,18 @@ void MaterialShapeItem::setShape(Shape shape) {
             m_animation->stop();
         }
 
+        // Skip morphing during initial creation
+        if (!isComponentComplete()) {
+            m_currentShape = shape;
+            m_fromShape = shape;
+            m_toShape = shape;
+            auto targetShape =
+                MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(shape));
+            m_morph = std::make_unique<Morph>(targetShape, targetShape);
+            m_morphProgress = 1.0f;
+            return;
+        }
+
         // Start from toShape (handles transition from manual to auto mode)
         startMorph(m_toShape, shape);
     }
