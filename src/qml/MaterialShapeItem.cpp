@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QVariantMap>
 #include <cmath>
+#include <numbers>
 
 using namespace RoundedPolygon;
 
@@ -133,6 +134,41 @@ RoundedPolygonWrapper MaterialShapeItem::rectangle(
     return RoundedPolygonWrapper(
         Shapes::rectangle(width, height, CornerRounding(radius, smoothing))
             .normalized());
+}
+
+RoundedPolygonWrapper MaterialShapeItem::squircle(float n, int segments) {
+    if (n < 0.1f) {
+        n = 0.1f;
+    }
+    if (segments < 4) {
+        segments = 4;
+    }
+
+    std::vector<float> vertices;
+    vertices.reserve(static_cast<size_t>(segments) * 2);
+
+    const float exp = 2.0f / n;
+    const float pi2 = static_cast<float>(std::numbers::pi) * 2.0f;
+
+    for (int i = 0; i < segments; ++i) {
+        float t = pi2 * static_cast<float>(i) / static_cast<float>(segments);
+        float cosT = std::cos(t);
+        float sinT = std::sin(t);
+
+        // Superellipse: |x|^n + |y|^n = 1
+        // Parametric: x = sign(cos(t)) * |cos(t)|^(2/n)
+        //             y = sign(sin(t)) * |sin(t)|^(2/n)
+        float x = std::copysign(std::pow(std::abs(cosT), exp), cosT);
+        float y = std::copysign(std::pow(std::abs(sinT), exp), sinT);
+
+        // Scale to 0-1 range (centered at 0.5)
+        vertices.push_back(x * 0.5f + 0.5f);
+        vertices.push_back(y * 0.5f + 0.5f);
+    }
+
+    // No corner rounding needed - the curve itself is smooth
+    return RoundedPolygonWrapper(
+        RoundedPolygonShape(vertices, CornerRounding::Unrounded).normalized());
 }
 
 // ========== Property setters ==========

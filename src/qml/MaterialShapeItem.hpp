@@ -200,6 +200,15 @@ public:
     Q_INVOKABLE static RoundedPolygonWrapper rectangle(float width = 1.0f,
         float height = 1.0f, float radius = 0.0f, float smoothing = 0.0f);
 
+    /**
+     * Create a squircle (superellipse) shape.
+     * Uses the equation |x|^n + |y|^n = 1
+     * @param n Exponent controlling squareness (2=ellipse, 4=squircle, higher=more square)
+     * @param segments Number of points to generate (default 64, higher=smoother)
+     */
+    Q_INVOKABLE static RoundedPolygonWrapper squircle(float n = 4.0f,
+        int segments = 64);
+
     // ========== Property accessors ==========
 
     [[nodiscard]] Shape shape() const { return m_targetShape; }

@@ -363,6 +363,22 @@ ApplicationWindow {
                 color: "#95e1d3"
             }
 
+            // Squircle (superellipse n=4)
+            MaterialShape {
+                implicitSize: 60
+                shape: MaterialShape.Custom
+                customShape: squircle(4)
+                color: "#74b9ff"
+            }
+
+            // iOS-style squircle (n=5)
+            MaterialShape {
+                implicitSize: 60
+                shape: MaterialShape.Custom
+                customShape: squircle(5)
+                color: "#a29bfe"
+            }
+
             // Custom asymmetric shape using object syntax
             MaterialShape {
                 implicitSize: 60
