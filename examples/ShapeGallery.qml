@@ -329,6 +329,7 @@ ApplicationWindow {
             // Custom diamond with rounded corners
             MaterialShape {
                 implicitSize: 60
+                shape: MaterialShape.Custom
                 customShape: polygon([
                     point(0.5, 0.0, 0.15, 0.5),
                     point(1.0, 0.5, 0.15, 0.5),
@@ -341,6 +342,7 @@ ApplicationWindow {
             // Custom star
             MaterialShape {
                 implicitSize: 60
+                shape: MaterialShape.Custom
                 customShape: star(6, 0.4, 0.1, 0.3)
                 color: "#4ecdc4"
             }
@@ -348,6 +350,7 @@ ApplicationWindow {
             // Regular hexagon with rounding
             MaterialShape {
                 implicitSize: 60
+                shape: MaterialShape.Custom
                 customShape: regularPolygon(6, 0.2, 0.5)
                 color: "#ffe66d"
             }
@@ -355,6 +358,7 @@ ApplicationWindow {
             // Rectangle with rounded corners
             MaterialShape {
                 implicitSize: 60
+                shape: MaterialShape.Custom
                 customShape: rectangle(1.5, 1.0, 0.2, 0.3)
                 color: "#95e1d3"
             }
@@ -362,6 +366,7 @@ ApplicationWindow {
             // Custom asymmetric shape using object syntax
             MaterialShape {
                 implicitSize: 60
+                shape: MaterialShape.Custom
                 customShape: polygon([
                     { x: 0.2, y: 0.0, radius: 0.1 },
                     { x: 0.8, y: 0.0, radius: 0.2, smoothing: 0.5 },

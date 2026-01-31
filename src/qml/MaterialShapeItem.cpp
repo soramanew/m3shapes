@@ -151,8 +151,7 @@ void MaterialShapeItem::setShape(Shape shape) {
             m_currentShape = shape;
             m_fromShape = shape;
             m_toShape = shape;
-            auto targetShape =
-                MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(shape));
+            auto targetShape = getShapeForEnum(shape);
             m_morph = std::make_unique<Morph>(targetShape, targetShape);
             m_morphProgress = 1.0f;
             return;
@@ -201,35 +200,18 @@ void MaterialShapeItem::setCustomShape(const RoundedPolygonWrapper& shape) {
     }
 
     m_customShape = shape;
-    m_targetShape = Custom;
     emit customShapeChanged();
-    emit shapeChanged();
 
-    if (m_animation->state() == QAbstractAnimation::Running) {
-        m_animation->stop();
+    // Only rebuild morph if shape is already Custom
+    if (m_targetShape == Custom) {
+        if (!isComponentComplete()) {
+            m_morph = std::make_unique<Morph>(shape.shape(), shape.shape());
+            m_morphProgress = 1.0f;
+        } else {
+            rebuildMorph();
+        }
+        update();
     }
-
-    if (!isComponentComplete()) {
-        m_currentShape = Custom;
-        m_fromShape = Custom;
-        m_toShape = Custom;
-        m_morph = std::make_unique<Morph>(shape.shape(), shape.shape());
-        m_morphProgress = 1.0f;
-        return;
-    }
-
-    // Morph from current shape to custom shape
-    auto fromShape = getShapeForEnum(m_toShape);
-    m_fromShape = m_toShape;
-    m_toShape = Custom;
-    emit fromShapeChanged();
-    emit toShapeChanged();
-
-    m_morph = std::make_unique<Morph>(fromShape, shape.shape());
-    m_morphProgress = 0.0f;
-    m_animation->start();
-
-    update();
 }
 
 void MaterialShapeItem::setCustomFromShape(const RoundedPolygonWrapper& shape) {

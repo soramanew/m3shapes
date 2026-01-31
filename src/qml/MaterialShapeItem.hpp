@@ -48,8 +48,9 @@ Q_DECLARE_METATYPE(RoundedPolygonWrapper)
  *       animationEasing: Easing.OutBounce
  *   }
  *
- * Custom shapes using factory functions:
+ * Custom shapes using factory functions (shape must be set to Custom):
  *   MaterialShape {
+ *       shape: MaterialShape.Custom
  *       customShape: MaterialShape.polygon([
  *           MaterialShape.point(0.5, 0, 0.2, 0.5),
  *           MaterialShape.point(1, 0.5, 0.2, 0.5),
@@ -60,16 +61,17 @@ Q_DECLARE_METATYPE(RoundedPolygonWrapper)
  *
  * Or with object syntax:
  *   MaterialShape {
+ *       shape: MaterialShape.Custom
  *       customShape: MaterialShape.polygon([
  *           { x: 0.5, y: 0, radius: 0.2, smoothing: 0.5 },
  *           { x: 1, y: 0.5 }  // uses default radius/smoothing of 0
  *       ])
  *   }
  *
- * Manual morphing between custom shapes:
+ * Manual morphing between custom and predefined shapes:
  *   MaterialShape {
  *       customFromShape: MaterialShape.polygon([...])
- *       customToShape: MaterialShape.star(5, 0.5, 0.1)
+ *       toShape: MaterialShape.Heart
  *       morphProgress: slider.value
  *   }
  */
