@@ -21,7 +21,8 @@ class RoundedPolygonShape;
  */
 class RoundedPolygonWrapper {
     Q_GADGET
-    Q_PROPERTY(bool valid READ isValid)
+    QML_VALUE_TYPE(roundedPolygon)
+    Q_PROPERTY(bool valid READ isValid FINAL)
 
 public:
     RoundedPolygonWrapper() = default;
@@ -36,7 +37,6 @@ public:
 private:
     std::optional<RoundedPolygon::RoundedPolygonShape> m_shape;
 };
-Q_DECLARE_METATYPE(RoundedPolygonWrapper)
 
 /**
  * MaterialShapeItem is a unified QML component for Material Design shapes.

@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -119,7 +121,10 @@ ApplicationWindow {
                     Repeater {
                         model: 35
 
-                        Rectangle {
+                        delegate: Rectangle {
+                            id: shapeDelegate
+                            required property int index
+
                             Layout.preferredWidth: 80
                             Layout.preferredHeight: 90
                             color: mainShape.shape === window.shapeEnums[index] ? "#2d4a7c" : "#1a1a2e"
@@ -135,15 +140,15 @@ ApplicationWindow {
                                 MaterialShape {
                                     Layout.alignment: Qt.AlignHCenter
                                     implicitSize: 50
-                                    shape: window.shapeEnums[index]
-                                    color: Qt.hsla(index * 0.03, 0.7, 0.6, 1.0)
+                                    shape: window.shapeEnums[shapeDelegate.index]
+                                    color: Qt.hsla(shapeDelegate.index * 0.03, 0.7, 0.6, 1.0)
                                     animationDuration: 0
                                 }
 
                                 Text {
                                     Layout.alignment: Qt.AlignHCenter
                                     Layout.fillWidth: true
-                                    text: window.shapeNames[index]
+                                    text: window.shapeNames[shapeDelegate.index]
                                     color: "#e0e0e0"
                                     font.pixelSize: 9
                                     horizontalAlignment: Text.AlignHCenter
@@ -154,8 +159,8 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
-                                    mainShape.shape = window.shapeEnums[index]
-                                    mainShape.color = Qt.hsla(index * 0.03, 0.7, 0.6, 1.0)
+                                    mainShape.shape = window.shapeEnums[shapeDelegate.index]
+                                    mainShape.color = Qt.hsla(shapeDelegate.index * 0.03, 0.7, 0.6, 1.0)
                                 }
                             }
                         }
