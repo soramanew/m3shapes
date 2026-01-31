@@ -7,17 +7,70 @@
 #include <QPainter>
 #include <QPropertyAnimation>
 #include <QQuickPaintedItem>
+#include <QVariantList>
 #include <memory>
+#include <optional>
+
+namespace RoundedPolygon {
+class RoundedPolygonShape;
+}
+
+/**
+ * QML wrapper for RoundedPolygonShape.
+ * Used to pass custom shapes between QML and C++.
+ */
+class RoundedPolygonWrapper {
+    Q_GADGET
+    Q_PROPERTY(bool valid READ isValid)
+
+public:
+    RoundedPolygonWrapper() = default;
+    explicit RoundedPolygonWrapper(
+        const RoundedPolygon::RoundedPolygonShape& shape);
+
+    [[nodiscard]] bool isValid() const { return m_shape.has_value(); }
+    [[nodiscard]] const RoundedPolygon::RoundedPolygonShape& shape() const;
+
+    Q_INVOKABLE RoundedPolygonWrapper normalized() const;
+
+private:
+    std::optional<RoundedPolygon::RoundedPolygonShape> m_shape;
+};
+Q_DECLARE_METATYPE(RoundedPolygonWrapper)
 
 /**
  * MaterialShapeItem is a unified QML component for Material Design shapes.
- * Setting the shape property automatically morphs to the new shape.
  *
- * Configure animation via properties:
+ * Predefined shapes with auto-morph:
  *   MaterialShape {
  *       shape: MaterialShape.Heart
  *       animationDuration: 1000
  *       animationEasing: Easing.OutBounce
+ *   }
+ *
+ * Custom shapes using factory functions:
+ *   MaterialShape {
+ *       customShape: MaterialShape.polygon([
+ *           MaterialShape.point(0.5, 0, 0.2, 0.5),
+ *           MaterialShape.point(1, 0.5, 0.2, 0.5),
+ *           MaterialShape.point(0.5, 1, 0.2, 0.5),
+ *           MaterialShape.point(0, 0.5, 0.2, 0.5)
+ *       ])
+ *   }
+ *
+ * Or with object syntax:
+ *   MaterialShape {
+ *       customShape: MaterialShape.polygon([
+ *           { x: 0.5, y: 0, radius: 0.2, smoothing: 0.5 },
+ *           { x: 1, y: 0.5 }  // uses default radius/smoothing of 0
+ *       ])
+ *   }
+ *
+ * Manual morphing between custom shapes:
+ *   MaterialShape {
+ *       customFromShape: MaterialShape.polygon([...])
+ *       customToShape: MaterialShape.star(5, 0.5, 0.1)
+ *       morphProgress: slider.value
  *   }
  */
 class MaterialShapeItem : public QQuickPaintedItem {
@@ -27,6 +80,7 @@ class MaterialShapeItem : public QQuickPaintedItem {
 
 public:
     enum Shape {
+        Custom = -1,
         Circle = 0,
         Square,
         Slanted,
@@ -66,7 +120,8 @@ public:
     Q_ENUM(Shape)
 
     Q_PROPERTY(Shape shape READ shape WRITE setShape NOTIFY shapeChanged)
-    Q_PROPERTY(Shape fromShape READ fromShape WRITE setFromShape NOTIFY fromShapeChanged)
+    Q_PROPERTY(Shape fromShape READ fromShape WRITE setFromShape NOTIFY
+            fromShapeChanged)
     Q_PROPERTY(Shape toShape READ toShape WRITE setToShape NOTIFY toShapeChanged)
     Q_PROPERTY(int animationDuration READ animationDuration WRITE
             setAnimationDuration NOTIFY animationDurationChanged)
@@ -81,50 +136,116 @@ public:
             strokeWidthChanged)
     Q_PROPERTY(float morphProgress READ morphProgress WRITE setMorphProgress
             NOTIFY morphProgressChanged)
+    Q_PROPERTY(RoundedPolygonWrapper customShape READ customShape WRITE
+            setCustomShape NOTIFY customShapeChanged)
+    Q_PROPERTY(RoundedPolygonWrapper customFromShape READ customFromShape WRITE
+            setCustomFromShape NOTIFY customFromShapeChanged)
+    Q_PROPERTY(RoundedPolygonWrapper customToShape READ customToShape WRITE
+            setCustomToShape NOTIFY customToShapeChanged)
 
     explicit MaterialShapeItem(QQuickItem* parent = nullptr);
 
-    [[nodiscard]] Shape shape() const { return m_targetShape; }
+    // ========== Factory functions for custom shapes ==========
 
+    /**
+     * Create a point with optional rounding for use in polygon().
+     * @param x X coordinate (0-1 normalized)
+     * @param y Y coordinate (0-1 normalized)
+     * @param radius Corner radius (default 0)
+     * @param smoothing Corner smoothing 0-1 (default 0)
+     */
+    Q_INVOKABLE static QVariantMap point(
+        float x, float y, float radius = 0.0f, float smoothing = 0.0f);
+
+    /**
+     * Create a custom polygon from vertices.
+     * @param vertices Array of points (from point() or {x, y, radius, smoothing})
+     * @param reps Number of rotational repetitions (default 1)
+     * @param centerX Center X coordinate (default 0.5)
+     * @param centerY Center Y coordinate (default 0.5)
+     * @param mirroring Enable mirror symmetry (default false)
+     */
+    Q_INVOKABLE static RoundedPolygonWrapper polygon(
+        const QVariantList& vertices, int reps = 1, float centerX = 0.5f,
+        float centerY = 0.5f, bool mirroring = false);
+
+    /**
+     * Create a regular polygon with N vertices.
+     * @param numVertices Number of vertices (minimum 3)
+     * @param radius Corner radius (default 0)
+     * @param smoothing Corner smoothing 0-1 (default 0)
+     */
+    Q_INVOKABLE static RoundedPolygonWrapper regularPolygon(
+        int numVertices, float radius = 0.0f, float smoothing = 0.0f);
+
+    /**
+     * Create a star shape.
+     * @param points Number of star points
+     * @param innerRadius Ratio of inner to outer radius (0-1)
+     * @param radius Corner radius (default 0)
+     * @param smoothing Corner smoothing (default 0)
+     */
+    Q_INVOKABLE static RoundedPolygonWrapper star(int points,
+        float innerRadius = 0.5f, float radius = 0.0f, float smoothing = 0.0f);
+
+    /**
+     * Create a rectangle shape.
+     * @param width Width (default 1)
+     * @param height Height (default 1)
+     * @param radius Corner radius (default 0)
+     * @param smoothing Corner smoothing (default 0)
+     */
+    Q_INVOKABLE static RoundedPolygonWrapper rectangle(float width = 1.0f,
+        float height = 1.0f, float radius = 0.0f, float smoothing = 0.0f);
+
+    // ========== Property accessors ==========
+
+    [[nodiscard]] Shape shape() const { return m_targetShape; }
     void setShape(Shape shape);
 
     [[nodiscard]] Shape fromShape() const { return m_fromShape; }
-
     void setFromShape(Shape shape);
 
     [[nodiscard]] Shape toShape() const { return m_toShape; }
-
     void setToShape(Shape shape);
 
     [[nodiscard]] int animationDuration() const { return m_animationDuration; }
-
     void setAnimationDuration(int duration);
 
     [[nodiscard]] QEasingCurve animationEasing() const {
         return m_animationEasing;
     }
-
     void setAnimationEasing(const QEasingCurve& easing);
 
     [[nodiscard]] QColor color() const { return m_color; }
-
     void setColor(const QColor& color);
 
     [[nodiscard]] qreal implicitSize() const { return m_implicitSize; }
-
     void setImplicitSize(qreal size);
 
     [[nodiscard]] QColor strokeColor() const { return m_strokeColor; }
-
     void setStrokeColor(const QColor& color);
 
     [[nodiscard]] float strokeWidth() const { return m_strokeWidth; }
-
     void setStrokeWidth(float width);
 
     [[nodiscard]] float morphProgress() const { return m_morphProgress; }
-
     void setMorphProgress(float progress);
+
+    [[nodiscard]] RoundedPolygonWrapper customShape() const {
+        return m_customShape;
+    }
+    void setCustomShape(const RoundedPolygonWrapper& shape);
+
+    [[nodiscard]] RoundedPolygonWrapper customFromShape() const {
+        return m_customFromShape;
+    }
+    void setCustomFromShape(const RoundedPolygonWrapper& shape);
+
+    [[nodiscard]] RoundedPolygonWrapper customToShape() const {
+        return m_customToShape;
+    }
+    void setCustomToShape(const RoundedPolygonWrapper& shape);
 
 signals:
     void shapeChanged();
@@ -137,6 +258,9 @@ signals:
     void strokeColorChanged();
     void strokeWidthChanged();
     void morphProgressChanged();
+    void customShapeChanged();
+    void customFromShapeChanged();
+    void customToShapeChanged();
 
 public:
     void paint(QPainter* painter) override;
@@ -149,6 +273,7 @@ private:
     QPainterPath buildPath() const;
     void startMorph(Shape from, Shape to);
     void rebuildMorph();
+    RoundedPolygon::RoundedPolygonShape getShapeForEnum(Shape shape) const;
 
     Shape m_currentShape = Circle;
     Shape m_targetShape = Circle;
@@ -164,4 +289,8 @@ private:
 
     std::unique_ptr<RoundedPolygon::Morph> m_morph;
     QPropertyAnimation* m_animation = nullptr;
+
+    RoundedPolygonWrapper m_customShape;
+    RoundedPolygonWrapper m_customFromShape;
+    RoundedPolygonWrapper m_customToShape;
 };

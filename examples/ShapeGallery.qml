@@ -314,5 +314,94 @@ ApplicationWindow {
                 color: Qt.hsla(0.8, 0.7, 0.6, 1.0)
             }
         }
+
+        // Custom shapes demo
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 20
+
+            Label {
+                text: "Custom Shapes:"
+                color: "#e0e0e0"
+                font.bold: true
+            }
+
+            // Custom diamond with rounded corners
+            MaterialShape {
+                implicitSize: 60
+                customShape: polygon([
+                    point(0.5, 0.0, 0.15, 0.5),
+                    point(1.0, 0.5, 0.15, 0.5),
+                    point(0.5, 1.0, 0.15, 0.5),
+                    point(0.0, 0.5, 0.15, 0.5)
+                ])
+                color: "#ff6b6b"
+            }
+
+            // Custom star
+            MaterialShape {
+                implicitSize: 60
+                customShape: star(6, 0.4, 0.1, 0.3)
+                color: "#4ecdc4"
+            }
+
+            // Regular hexagon with rounding
+            MaterialShape {
+                implicitSize: 60
+                customShape: regularPolygon(6, 0.2, 0.5)
+                color: "#ffe66d"
+            }
+
+            // Rectangle with rounded corners
+            MaterialShape {
+                implicitSize: 60
+                customShape: rectangle(1.5, 1.0, 0.2, 0.3)
+                color: "#95e1d3"
+            }
+
+            // Custom asymmetric shape using object syntax
+            MaterialShape {
+                implicitSize: 60
+                customShape: polygon([
+                    { x: 0.2, y: 0.0, radius: 0.1 },
+                    { x: 0.8, y: 0.0, radius: 0.2, smoothing: 0.5 },
+                    { x: 1.0, y: 0.5, radius: 0.15 },
+                    { x: 0.8, y: 1.0, radius: 0.1 },
+                    { x: 0.2, y: 1.0, radius: 0.1 },
+                    { x: 0.0, y: 0.5, radius: 0.2, smoothing: 0.8 }
+                ])
+                color: "#f38181"
+            }
+
+            // Morph from custom to predefined
+            MaterialShape {
+                id: customMorphShape
+                implicitSize: 60
+                customFromShape: polygon([
+                    point(0.5, 0.0, 0.1),
+                    point(1.0, 0.3, 0.1),
+                    point(1.0, 0.7, 0.1),
+                    point(0.5, 1.0, 0.1),
+                    point(0.0, 0.7, 0.1),
+                    point(0.0, 0.3, 0.1)
+                ])
+                toShape: MaterialShape.Heart
+                morphProgress: customProgressSlider.value
+                color: "#aa96da"
+            }
+
+            Slider {
+                id: customProgressSlider
+                Layout.fillWidth: true
+                from: 0
+                to: 1
+                value: 0
+            }
+
+            Label {
+                text: "Custom → Heart"
+                color: "#e0e0e0"
+            }
+        }
     }
 }

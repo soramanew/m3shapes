@@ -89,9 +89,6 @@ public:
     // Get shape by type
     [[nodiscard]] static RoundedPolygonShape getShape(ShapeType type);
 
-private:
-    MaterialShapes() = default;
-
     // Helper struct for custom polygon construction
     struct PointNRound {
         float x, y;
@@ -104,10 +101,20 @@ private:
             , rounding(r) {}
     };
 
-    // Helper function to create custom polygons with optional mirroring
-    static RoundedPolygonShape customPolygon(
+    /**
+     * Create a custom polygon from points with optional rotational repetition.
+     * @param points Vector of points with optional per-vertex rounding
+     * @param reps Number of rotational repetitions (1 = no repetition)
+     * @param centerX Center X for rotation (default 0.5)
+     * @param centerY Center Y for rotation (default 0.5)
+     * @param mirroring If true, alternate repetitions are mirrored
+     */
+    [[nodiscard]] static RoundedPolygonShape customPolygon(
         const std::vector<PointNRound>& points, int reps, float centerX = 0.5f,
         float centerY = 0.5f, bool mirroring = false);
+
+private:
+    MaterialShapes() = default;
 
     // Helper function to rotate points
     static std::vector<PointNRound> doRepeat(
