@@ -246,7 +246,7 @@ void MaterialShapeItem::setCustomShape(const RoundedPolygonWrapper& shape) {
         } else {
             rebuildMorph();
         }
-        update();
+        invalidatePath();
     }
 }
 
@@ -276,7 +276,7 @@ void MaterialShapeItem::rebuildMorph() {
     RoundedPolygonShape from = getShapeForEnum(m_fromShape);
     RoundedPolygonShape to = getShapeForEnum(m_toShape);
     m_morph = std::make_unique<Morph>(from, to);
-    update();
+    invalidatePath();
 }
 
 RoundedPolygonShape MaterialShapeItem::getShapeForEnum(Shape shape) const {
@@ -312,7 +312,7 @@ void MaterialShapeItem::startMorph(Shape from, Shape to) {
 
     m_animation->start();
 
-    update();
+    invalidatePath();
 }
 
 void MaterialShapeItem::onAnimationValueChanged(const QVariant& value) {
@@ -323,7 +323,7 @@ void MaterialShapeItem::setMorphProgress(float progress) {
     if (!qFuzzyCompare(m_morphProgress, progress)) {
         m_morphProgress = progress;
         emit morphProgressChanged();
-        update();
+        invalidatePath();
     }
 }
 
@@ -410,12 +410,40 @@ QPainterPath MaterialShapeItem::buildPath() const {
     return path;
 }
 
+const QPainterPath& MaterialShapeItem::cachedPath() const {
+    if (m_pathDirty) {
+        m_cachedPath = buildPath();
+        m_pathDirty = false;
+    }
+    return m_cachedPath;
+}
+
+void MaterialShapeItem::invalidatePath() {
+    m_pathDirty = true;
+    update();
+}
+
+void MaterialShapeItem::geometryChange(
+    const QRectF& newGeometry, const QRectF& oldGeometry) {
+    if (newGeometry.size() != oldGeometry.size()) {
+        m_pathDirty = true;
+    }
+    QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
+}
+
+bool MaterialShapeItem::contains(const QPointF& point) const {
+    if (width() <= 0 || height() <= 0) {
+        return false;
+    }
+    return cachedPath().contains(point);
+}
+
 void MaterialShapeItem::paint(QPainter* painter) {
     if (width() <= 0 || height() <= 0) {
         return;
     }
 
-    QPainterPath path = buildPath();
+    const QPainterPath& path = cachedPath();
 
     // Fill
     painter->setPen(Qt::NoPen);

@@ -54,10 +54,15 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 implicitSize: Math.min(parent.width, parent.height) * 0.8
                 shape: MaterialShape.Circle
-                color: Qt.hsla(0.6, 0.7, 0.6, 1.0)
+                color: Qt.hsla(col.hslHue, col.hslSaturation - (hover.hovered ? 0.2 : 0), col.hslLightness + (hover.hovered ? 0.2 : 0), 1)
                 rotation: autoRotateCheckbox.checked ? continuousRotation : rotationSlider.value
 
                 property real continuousRotation: 0
+                property color col: Qt.hsla(0.6, 0.7, 0.6, 1.0)
+
+                HoverHandler {
+                    id: hover
+                }
 
                 NumberAnimation on continuousRotation {
                     running: autoRotateCheckbox.checked
@@ -85,7 +90,7 @@ ApplicationWindow {
                 onTriggered: {
                     shapeIndex = (shapeIndex + 1) % 35
                     mainShape.shape = window.shapeEnums[shapeIndex]
-                    mainShape.color = Qt.hsla(shapeIndex * 0.03, 0.7, 0.6, 1.0)
+                    mainShape.col = Qt.hsla(shapeIndex * 0.03, 0.7, 0.6, 1.0)
                 }
             }
 
@@ -160,7 +165,7 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 onClicked: {
                                     mainShape.shape = window.shapeEnums[shapeDelegate.index]
-                                    mainShape.color = Qt.hsla(shapeDelegate.index * 0.03, 0.7, 0.6, 1.0)
+                                    mainShape.col = Qt.hsla(shapeDelegate.index * 0.03, 0.7, 0.6, 1.0)
                                 }
                             }
                         }
@@ -254,7 +259,7 @@ ApplicationWindow {
                 onClicked: {
                     var randomIndex = Math.floor(Math.random() * 35)
                     mainShape.shape = window.shapeEnums[randomIndex]
-                    mainShape.color = Qt.hsla(randomIndex * 0.03, 0.7, 0.6, 1.0)
+                    mainShape.col = Qt.hsla(randomIndex * 0.03, 0.7, 0.6, 1.0)
                 }
             }
         }

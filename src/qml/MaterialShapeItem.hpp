@@ -258,6 +258,8 @@ public:
     }
     void setCustomToShape(const RoundedPolygonWrapper& shape);
 
+    bool contains(const QPointF& point) const override;
+
 signals:
     void shapeChanged();
     void fromShapeChanged();
@@ -280,8 +282,14 @@ private slots:
     void onAnimationValueChanged(const QVariant& value);
     void onMorphFinished();
 
+protected:
+    void geometryChange(
+        const QRectF& newGeometry, const QRectF& oldGeometry) override;
+
 private:
     QPainterPath buildPath() const;
+    const QPainterPath& cachedPath() const;
+    void invalidatePath();
     void startMorph(Shape from, Shape to);
     void rebuildMorph();
     RoundedPolygon::RoundedPolygonShape getShapeForEnum(Shape shape) const;
@@ -300,6 +308,9 @@ private:
 
     std::unique_ptr<RoundedPolygon::Morph> m_morph;
     QPropertyAnimation* m_animation = nullptr;
+
+    mutable QPainterPath m_cachedPath;
+    mutable bool m_pathDirty = true;
 
     RoundedPolygonWrapper m_customShape;
     RoundedPolygonWrapper m_customFromShape;
