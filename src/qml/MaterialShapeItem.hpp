@@ -214,10 +214,14 @@ public:
     /**
      * Get the point on the shape's edge along a ray from the center.
      * Convention: 0° = up (12 o'clock), positive = clockwise (matches
-     * Item.rotation). For non-convex shapes the OUTERMOST intersection is
-     * returned.
-     * @param angleDegrees Direction of the ray in degrees.
-     * @return Point in item-local coordinates, or (0, 0) if the path is empty.
+     * Item.rotation). The angle is interpreted in the item's parent frame —
+     * the item's own rotation is taken into account, so 0° always points
+     * "up" on screen regardless of how the shape is rotated. For non-convex
+     * shapes the OUTERMOST intersection is returned.
+     * @param angleDegrees Direction of the ray in degrees, parent-frame.
+     * @return Point in item-local (pre-rotation) coordinates — place a child
+     *         of this item there and the item's transform will move it onto
+     *         the visible edge automatically. Returns (0, 0) if empty.
      */
     Q_INVOKABLE QPointF pointAtAngle(qreal angleDegrees) const;
 

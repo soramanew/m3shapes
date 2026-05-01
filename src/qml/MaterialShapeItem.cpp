@@ -454,8 +454,14 @@ QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
 
     const QPointF center(width() / 2.0, height() / 2.0);
 
+    // Input angle is in the parent (screen) frame. Subtract the item's
+    // rotation so the ray is cast in the path's local frame; the returned
+    // local point then re-rotates correctly when used as a child of this
+    // item.
+    const qreal localDegrees = angleDegrees - rotation();
+
     // 0° = up (screen y points down), positive = clockwise
-    const qreal radians = angleDegrees * std::numbers::pi / 180.0;
+    const qreal radians = localDegrees * std::numbers::pi / 180.0;
     const qreal dx = std::sin(radians);
     const qreal dy = -std::cos(radians);
 

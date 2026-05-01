@@ -65,13 +65,11 @@ ApplicationWindow {
                 property real continuousRotation: 0
                 property color col: Qt.hsla(0.6, 0.7, 0.6, 1.0)
 
-                // Angle from shape center to mouse, in shape-local coordinates
-                // (so it stays correct under rotation). 0° = up, CW positive.
-                readonly property point localMouse: mapFromItem(stage,
-                    stageHover.point.position.x, stageHover.point.position.y)
+                // Angle from shape center to mouse in stage (parent) coords.
+                // pointAtAngle accounts for the item's rotation internally.
                 readonly property real mouseAngle: Math.atan2(
-                    localMouse.x - width / 2,
-                    -(localMouse.y - height / 2)) * 180 / Math.PI
+                    stageHover.point.position.x - (x + width / 2),
+                    -(stageHover.point.position.y - (y + height / 2))) * 180 / Math.PI
                 readonly property point edgePoint: pointAtAngle(mouseAngle)
 
                 HoverHandler {
