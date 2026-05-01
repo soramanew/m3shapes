@@ -431,6 +431,69 @@ void MaterialShapeItem::geometryChange(
     QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
 }
 
+QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
+    if (width() <= 0 || height() <= 0) {
+        return {};
+    }
+
+    const QPainterPath& path = cachedPath();
+    if (path.isEmpty()) {
+        return {};
+    }
+
+    const QPointF center(width() / 2.0, height() / 2.0);
+
+    // 0° = up (screen y points down), positive = clockwise
+    const qreal radians = angleDegrees * std::numbers::pi / 180.0;
+    const qreal dx = std::sin(radians);
+    const qreal dy = -std::cos(radians);
+
+    const qreal maxDist = std::hypot(width(), height());
+
+    // Walk inward from outside until we land inside the path. This finds the
+    // outermost intersection and stays correct for non-convex shapes (e.g.
+    // hearts), where naive outward binary search could lock onto an inner
+    // boundary.
+    constexpr int s_scanSteps = 128;
+    qreal lastOutside = maxDist;
+    qreal firstInside = -1.0;
+    for (int i = 0; i <= s_scanSteps; ++i) {
+        const qreal t = maxDist * (1.0 - static_cast<qreal>(i) / s_scanSteps);
+        const QPointF probe(center.x() + dx * t, center.y() + dy * t);
+        if (path.contains(probe)) {
+            firstInside = t;
+            break;
+        }
+        lastOutside = t;
+    }
+
+    if (firstInside < 0.0) {
+        return {};
+    }
+
+    // Refine to sub-pixel precision between the last-outside and first-inside.
+    qreal lo = firstInside;
+    qreal hi = lastOutside;
+    for (int i = 0; i < 32; ++i) {
+        const qreal mid = (lo + hi) * 0.5;
+        const QPointF probe(center.x() + dx * mid, center.y() + dy * mid);
+        if (path.contains(probe)) {
+            lo = mid;
+        } else {
+            hi = mid;
+        }
+    }
+
+    return QPointF(center.x() + dx * lo, center.y() + dy * lo);
+}
+
+QRectF MaterialShapeItem::pathBounds() const {
+    if (width() <= 0 || height() <= 0) {
+        return {};
+    }
+    return cachedPath().boundingRect();
+}
+
 bool MaterialShapeItem::contains(const QPointF& point) const {
     if (width() <= 0 || height() <= 0) {
         return false;

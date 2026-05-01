@@ -209,6 +209,23 @@ public:
     Q_INVOKABLE static RoundedPolygonWrapper squircle(float n = 4.0f,
         int segments = 64);
 
+    // ========== Path queries ==========
+
+    /**
+     * Get the point on the shape's edge along a ray from the center.
+     * Convention: 0° = up (12 o'clock), positive = clockwise (matches
+     * Item.rotation). For non-convex shapes the OUTERMOST intersection is
+     * returned.
+     * @param angleDegrees Direction of the ray in degrees.
+     * @return Point in item-local coordinates, or (0, 0) if the path is empty.
+     */
+    Q_INVOKABLE QPointF pointAtAngle(qreal angleDegrees) const;
+
+    /**
+     * Bounding rectangle of the current shape, in item-local coordinates.
+     */
+    Q_INVOKABLE QRectF pathBounds() const;
+
     // ========== Property accessors ==========
 
     [[nodiscard]] Shape shape() const { return m_targetShape; }
