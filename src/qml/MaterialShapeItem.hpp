@@ -226,6 +226,13 @@ public:
     Q_INVOKABLE QPointF pointAtAngle(qreal angleDegrees) const;
 
     /**
+     * Distance from the shape's center to its edge along a ray at the given
+     * angle. Same conventions as pointAtAngle.
+     * @return Distance in pixels, or 0 if the path is empty / no hit.
+     */
+    Q_INVOKABLE qreal distanceAtAngle(qreal angleDegrees) const;
+
+    /**
      * Bounding rectangle of the current shape, in item-local coordinates.
      */
     Q_INVOKABLE QRectF pathBounds() const;
@@ -311,6 +318,7 @@ private:
     QPainterPath buildPath() const;
     const QPainterPath& cachedPath() const;
     const QList<QPolygonF>& cachedPolygons() const;
+    qreal rayHitDistance(qreal dx, qreal dy) const;
     void invalidatePath();
     void startMorph(Shape from, Shape to);
     void rebuildMorph();

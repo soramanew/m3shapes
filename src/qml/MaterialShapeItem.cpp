@@ -442,28 +442,16 @@ void MaterialShapeItem::geometryChange(
     QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
 }
 
-QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
+qreal MaterialShapeItem::rayHitDistance(qreal dx, qreal dy) const {
     if (width() <= 0 || height() <= 0) {
-        return {};
+        return -1.0;
     }
-
     const QList<QPolygonF>& polygons = cachedPolygons();
     if (polygons.isEmpty()) {
-        return {};
+        return -1.0;
     }
 
     const QPointF center(width() / 2.0, height() / 2.0);
-
-    // Input angle is in the parent (screen) frame. Subtract the item's
-    // rotation so the ray is cast in the path's local frame; the returned
-    // local point then re-rotates correctly when used as a child of this
-    // item.
-    const qreal localDegrees = angleDegrees - rotation();
-
-    // 0° = up (screen y points down), positive = clockwise
-    const qreal radians = localDegrees * std::numbers::pi / 180.0;
-    const qreal dx = std::sin(radians);
-    const qreal dy = -std::cos(radians);
 
     // Analytically intersect each flattened edge with the ray. Take the
     // farthest hit so non-convex shapes return their outer boundary.
@@ -494,12 +482,34 @@ QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
             }
         }
     }
+    return bestT;
+}
 
-    if (bestT < 0.0) {
+QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
+    // Input angle is in the parent (screen) frame. Subtract the item's
+    // rotation so the ray is cast in the path's local frame; the returned
+    // local point then re-rotates correctly when used as a child of this
+    // item.
+    const qreal radians =
+        (angleDegrees - rotation()) * std::numbers::pi / 180.0;
+    const qreal dx = std::sin(radians);
+    const qreal dy = -std::cos(radians);
+
+    const qreal t = rayHitDistance(dx, dy);
+    if (t < 0.0) {
         return {};
     }
+    const QPointF center(width() / 2.0, height() / 2.0);
+    return QPointF(center.x() + dx * t, center.y() + dy * t);
+}
 
-    return QPointF(center.x() + dx * bestT, center.y() + dy * bestT);
+qreal MaterialShapeItem::distanceAtAngle(qreal angleDegrees) const {
+    const qreal radians =
+        (angleDegrees - rotation()) * std::numbers::pi / 180.0;
+    const qreal dx = std::sin(radians);
+    const qreal dy = -std::cos(radians);
+    const qreal t = rayHitDistance(dx, dy);
+    return t < 0.0 ? 0.0 : t;
 }
 
 QRectF MaterialShapeItem::pathBounds() const {
