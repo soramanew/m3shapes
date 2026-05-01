@@ -44,10 +44,15 @@ ApplicationWindow {
 
         // Main shape display
         Rectangle {
+            id: stage
             Layout.fillWidth: true
             Layout.preferredHeight: 300
             color: "#16213e"
             radius: 12
+
+            HoverHandler {
+                id: stageHover
+            }
 
             MaterialShape {
                 id: mainShape
@@ -59,6 +64,15 @@ ApplicationWindow {
 
                 property real continuousRotation: 0
                 property color col: Qt.hsla(0.6, 0.7, 0.6, 1.0)
+
+                // Angle from shape center to mouse, in shape-local coordinates
+                // (so it stays correct under rotation). 0° = up, CW positive.
+                readonly property point localMouse: mapFromItem(stage,
+                    stageHover.point.position.x, stageHover.point.position.y)
+                readonly property real mouseAngle: Math.atan2(
+                    localMouse.x - width / 2,
+                    -(localMouse.y - height / 2)) * 180 / Math.PI
+                readonly property point edgePoint: pointAtAngle(mouseAngle)
 
                 HoverHandler {
                     id: hover
@@ -78,6 +92,38 @@ ApplicationWindow {
                     border.color: "#ff5555"
                     border.width: 2
                     visible: showBoundsCheckbox.checked
+                }
+
+                // Ray from shape center to the mouse-direction edge point.
+                // Lives inside mainShape so rotation transforms it together
+                // with the shape, keeping it pointing toward the screen mouse.
+                Rectangle {
+                    visible: stageHover.hovered
+                    readonly property real cx: mainShape.width / 2
+                    readonly property real cy: mainShape.height / 2
+                    readonly property real edx: mainShape.edgePoint.x - cx
+                    readonly property real edy: mainShape.edgePoint.y - cy
+                    x: cx
+                    y: cy - height / 2
+                    width: Math.hypot(edx, edy)
+                    height: 2
+                    color: "#00ff88"
+                    antialiasing: true
+                    transformOrigin: Item.Left
+                    rotation: Math.atan2(edy, edx) * 180 / Math.PI
+                }
+
+                // Marker at the shape's edge along that ray.
+                Rectangle {
+                    visible: stageHover.hovered
+                    width: 14
+                    height: 14
+                    radius: 7
+                    color: "#00ff88"
+                    border.color: "white"
+                    border.width: 2
+                    x: mainShape.edgePoint.x - width / 2
+                    y: mainShape.edgePoint.y - height / 2
                 }
             }
 

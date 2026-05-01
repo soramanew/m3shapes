@@ -448,43 +448,43 @@ QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
     const qreal dx = std::sin(radians);
     const qreal dy = -std::cos(radians);
 
-    const qreal maxDist = std::hypot(width(), height());
-
-    // Walk inward from outside until we land inside the path. This finds the
-    // outermost intersection and stays correct for non-convex shapes (e.g.
-    // hearts), where naive outward binary search could lock onto an inner
-    // boundary.
-    constexpr int s_scanSteps = 128;
-    qreal lastOutside = maxDist;
-    qreal firstInside = -1.0;
-    for (int i = 0; i <= s_scanSteps; ++i) {
-        const qreal t = maxDist * (1.0 - static_cast<qreal>(i) / s_scanSteps);
-        const QPointF probe(center.x() + dx * t, center.y() + dy * t);
-        if (path.contains(probe)) {
-            firstInside = t;
-            break;
+    // Flatten the path into line segments and analytically intersect each
+    // edge with the ray. Take the farthest hit so non-convex shapes return
+    // their outer boundary.
+    qreal bestT = -1.0;
+    const QList<QPolygonF> polygons = path.toSubpathPolygons();
+    for (const QPolygonF& poly : polygons) {
+        const int n = static_cast<int>(poly.size());
+        if (n < 2) {
+            continue;
         }
-        lastOutside = t;
+        for (int i = 0; i < n - 1; ++i) {
+            const QPointF& a = poly[i];
+            const QPointF& b = poly[i + 1];
+            const qreal ex = b.x() - a.x();
+            const qreal ey = b.y() - a.y();
+            const qreal denom = ex * dy - ey * dx;
+            if (std::abs(denom) < 1e-9) {
+                continue;
+            }
+            const qreal rx = a.x() - center.x();
+            const qreal ry = a.y() - center.y();
+            const qreal t = (ex * ry - ey * rx) / denom;
+            const qreal s = (dx * ry - dy * rx) / denom;
+            if (t < 0.0 || s < 0.0 || s > 1.0) {
+                continue;
+            }
+            if (t > bestT) {
+                bestT = t;
+            }
+        }
     }
 
-    if (firstInside < 0.0) {
+    if (bestT < 0.0) {
         return {};
     }
 
-    // Refine to sub-pixel precision between the last-outside and first-inside.
-    qreal lo = firstInside;
-    qreal hi = lastOutside;
-    for (int i = 0; i < 32; ++i) {
-        const qreal mid = (lo + hi) * 0.5;
-        const QPointF probe(center.x() + dx * mid, center.y() + dy * mid);
-        if (path.contains(probe)) {
-            lo = mid;
-        } else {
-            hi = mid;
-        }
-    }
-
-    return QPointF(center.x() + dx * lo, center.y() + dy * lo);
+    return QPointF(center.x() + dx * bestT, center.y() + dy * bestT);
 }
 
 QRectF MaterialShapeItem::pathBounds() const {
