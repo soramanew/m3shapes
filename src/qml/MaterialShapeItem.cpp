@@ -414,12 +414,22 @@ const QPainterPath& MaterialShapeItem::cachedPath() const {
     if (m_pathDirty) {
         m_cachedPath = buildPath();
         m_pathDirty = false;
+        m_polygonsDirty = true;
     }
     return m_cachedPath;
 }
 
+const QList<QPolygonF>& MaterialShapeItem::cachedPolygons() const {
+    if (m_polygonsDirty) {
+        m_cachedPolygons = cachedPath().toSubpathPolygons();
+        m_polygonsDirty = false;
+    }
+    return m_cachedPolygons;
+}
+
 void MaterialShapeItem::invalidatePath() {
     m_pathDirty = true;
+    m_polygonsDirty = true;
     update();
 }
 
@@ -427,6 +437,7 @@ void MaterialShapeItem::geometryChange(
     const QRectF& newGeometry, const QRectF& oldGeometry) {
     if (newGeometry.size() != oldGeometry.size()) {
         m_pathDirty = true;
+        m_polygonsDirty = true;
     }
     QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
 }
@@ -436,8 +447,8 @@ QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
         return {};
     }
 
-    const QPainterPath& path = cachedPath();
-    if (path.isEmpty()) {
+    const QList<QPolygonF>& polygons = cachedPolygons();
+    if (polygons.isEmpty()) {
         return {};
     }
 
@@ -448,11 +459,9 @@ QPointF MaterialShapeItem::pointAtAngle(qreal angleDegrees) const {
     const qreal dx = std::sin(radians);
     const qreal dy = -std::cos(radians);
 
-    // Flatten the path into line segments and analytically intersect each
-    // edge with the ray. Take the farthest hit so non-convex shapes return
-    // their outer boundary.
+    // Analytically intersect each flattened edge with the ray. Take the
+    // farthest hit so non-convex shapes return their outer boundary.
     qreal bestT = -1.0;
-    const QList<QPolygonF> polygons = path.toSubpathPolygons();
     for (const QPolygonF& poly : polygons) {
         const int n = static_cast<int>(poly.size());
         if (n < 2) {

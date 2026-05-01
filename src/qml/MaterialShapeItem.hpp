@@ -306,6 +306,7 @@ protected:
 private:
     QPainterPath buildPath() const;
     const QPainterPath& cachedPath() const;
+    const QList<QPolygonF>& cachedPolygons() const;
     void invalidatePath();
     void startMorph(Shape from, Shape to);
     void rebuildMorph();
@@ -327,7 +328,9 @@ private:
     QPropertyAnimation* m_animation = nullptr;
 
     mutable QPainterPath m_cachedPath;
+    mutable QList<QPolygonF> m_cachedPolygons;
     mutable bool m_pathDirty = true;
+    mutable bool m_polygonsDirty = true;
 
     RoundedPolygonWrapper m_customShape;
     RoundedPolygonWrapper m_customFromShape;
