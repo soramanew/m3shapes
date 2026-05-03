@@ -237,6 +237,21 @@ public:
      */
     Q_INVOKABLE QRectF pathBounds() const;
 
+    /**
+     * Defer morph rebuilds until the matching endBatchUpdate(). Useful when
+     * setting several morph-related properties (fromShape, toShape, custom*)
+     * at once so the underlying Morph is constructed only one time. Calls
+     * nest — every begin must be paired with an end.
+     */
+    Q_INVOKABLE void beginBatchUpdate();
+
+    /**
+     * End a batch started by beginBatchUpdate(). When the outermost batch
+     * closes, performs a single rebuild if any property changed during the
+     * batch.
+     */
+    Q_INVOKABLE void endBatchUpdate();
+
     // ========== Property accessors ==========
 
     [[nodiscard]] Shape shape() const { return m_targetShape; }
@@ -347,4 +362,7 @@ private:
     RoundedPolygonWrapper m_customShape;
     RoundedPolygonWrapper m_customFromShape;
     RoundedPolygonWrapper m_customToShape;
+
+    int m_batchDepth = 0;
+    bool m_pendingRebuild = false;
 };

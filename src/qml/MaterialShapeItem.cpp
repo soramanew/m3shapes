@@ -273,10 +273,28 @@ void MaterialShapeItem::setCustomToShape(const RoundedPolygonWrapper& shape) {
 }
 
 void MaterialShapeItem::rebuildMorph() {
+    if (m_batchDepth > 0) {
+        m_pendingRebuild = true;
+        return;
+    }
     RoundedPolygonShape from = getShapeForEnum(m_fromShape);
     RoundedPolygonShape to = getShapeForEnum(m_toShape);
     m_morph = std::make_unique<Morph>(from, to);
     invalidatePath();
+}
+
+void MaterialShapeItem::beginBatchUpdate() {
+    ++m_batchDepth;
+}
+
+void MaterialShapeItem::endBatchUpdate() {
+    if (m_batchDepth <= 0) {
+        return;
+    }
+    if (--m_batchDepth == 0 && m_pendingRebuild) {
+        m_pendingRebuild = false;
+        rebuildMorph();
+    }
 }
 
 RoundedPolygonShape MaterialShapeItem::getShapeForEnum(Shape shape) const {
