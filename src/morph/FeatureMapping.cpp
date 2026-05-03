@@ -21,8 +21,8 @@ class MappingHelper {
 public:
     std::vector<std::pair<float, float>> mapping;
 
-    void addMapping(const ProgressableFeature* f1,
-        const ProgressableFeature* f2) {
+    void addMapping(
+        const ProgressableFeature* f1, const ProgressableFeature* f2) {
         // Don't map the same feature twice
         if (m_usedF1.count(f1) > 0 || m_usedF2.count(f2) > 0) {
             return;
@@ -157,10 +157,8 @@ Point featureRepresentativePoint(const Feature* feature) {
     if (cubics.empty()) {
         return Point(0.0f, 0.0f);
     }
-    float x =
-        (cubics.front().anchor0X() + cubics.back().anchor1X()) / 2.0f;
-    float y =
-        (cubics.front().anchor0Y() + cubics.back().anchor1Y()) / 2.0f;
+    float x = (cubics.front().anchor0X() + cubics.back().anchor1X()) / 2.0f;
+    float y = (cubics.front().anchor0Y() + cubics.back().anchor1Y()) / 2.0f;
     return Point(x, y);
 }
 

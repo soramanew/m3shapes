@@ -47,8 +47,8 @@ std::vector<MaterialShapes::PointNRound> MaterialShapes::doRepeat(
                     if (rep % 2 == 0) {
                         a = sectionAngle * static_cast<float>(rep) + angles[i];
                     } else {
-                        a = sectionAngle * static_cast<float>(rep) + sectionAngle - angles[i] +
-                            2 * angles[0];
+                        a = sectionAngle * static_cast<float>(rep) +
+                            sectionAngle - angles[i] + 2 * angles[0];
                     }
                     float rad = a * FloatPi / 180.0f;
                     float finalX = std::cos(rad) * distances[i] + centerX;
@@ -61,7 +61,8 @@ std::vector<MaterialShapes::PointNRound> MaterialShapes::doRepeat(
         size_t np = points.size();
         for (size_t rep = 0; rep < static_cast<size_t>(reps); ++rep) {
             for (size_t i = 0; i < np; ++i) {
-                float angle = 360.0f / static_cast<float>(reps) * static_cast<float>(rep);
+                float angle =
+                    360.0f / static_cast<float>(reps) * static_cast<float>(rep);
                 float rad = angle * FloatPi / 180.0f;
                 float dx = points[i].x - centerX;
                 float dy = points[i].y - centerY;

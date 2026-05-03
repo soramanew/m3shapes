@@ -60,7 +60,9 @@ RoundedPolygonShape Shapes::star(int numVerticesPerRadius, float radius,
     }
 
     for (size_t i = 0; i < totalVertices; ++i) {
-        float angleRadians = FloatPi / static_cast<float>(numVerticesPerRadius) * static_cast<float>(i);
+        float angleRadians = FloatPi /
+                             static_cast<float>(numVerticesPerRadius) *
+                             static_cast<float>(i);
         bool isOuter = (i % 2 == 0);
         float r = isOuter ? radius : innerRadius;
 
@@ -142,7 +144,9 @@ RoundedPolygonShape Shapes::pillStar(float width, float height,
 
     // Calculate vertices with elliptical distribution
     for (size_t i = 0; i < totalVertices; ++i) {
-        float baseAngle = TwoPi / static_cast<float>(totalVertices) * static_cast<float>(i) + startLocation * TwoPi;
+        float baseAngle =
+            TwoPi / static_cast<float>(totalVertices) * static_cast<float>(i) +
+            startLocation * TwoPi;
         bool isOuter = (i % 2 == 0);
 
         float w, h;
@@ -151,9 +155,11 @@ RoundedPolygonShape Shapes::pillStar(float width, float height,
             h = outerHeight;
         } else {
             // Apply vertex spacing adjustment for inner vertices
-            float adjustedIndex = static_cast<float>(i) + (vertexSpacing - 0.5f);
+            float adjustedIndex =
+                static_cast<float>(i) + (vertexSpacing - 0.5f);
             baseAngle =
-                TwoPi / static_cast<float>(totalVertices) * adjustedIndex + startLocation * TwoPi;
+                TwoPi / static_cast<float>(totalVertices) * adjustedIndex +
+                startLocation * TwoPi;
             w = innerWidth;
             h = innerHeight;
         }

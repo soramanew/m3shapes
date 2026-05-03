@@ -113,9 +113,8 @@ RoundedPolygonWrapper MaterialShapeItem::regularPolygon(
     if (numVertices < 3) {
         numVertices = 3;
     }
-    return RoundedPolygonWrapper(
-        RoundedPolygonShape(numVertices, 1.0f, 0.0f, 0.0f,
-            CornerRounding(radius, smoothing))
+    return RoundedPolygonWrapper(RoundedPolygonShape(
+        numVertices, 1.0f, 0.0f, 0.0f, CornerRounding(radius, smoothing))
             .normalized());
 }
 
@@ -124,8 +123,8 @@ RoundedPolygonWrapper MaterialShapeItem::star(
     if (points < 2) {
         points = 2;
     }
-    return RoundedPolygonWrapper(
-        Shapes::star(points, 1.0f, innerRadius, CornerRounding(radius, smoothing))
+    return RoundedPolygonWrapper(Shapes::star(
+        points, 1.0f, innerRadius, CornerRounding(radius, smoothing))
             .normalized());
 }
 
@@ -312,7 +311,8 @@ RoundedPolygonShape MaterialShapeItem::getShapeForEnum(Shape shape) const {
         // Fallback to circle
         return MaterialShapes::getShape(MaterialShapes::ShapeType::Circle);
     }
-    return MaterialShapes::getShape(static_cast<MaterialShapes::ShapeType>(shape));
+    return MaterialShapes::getShape(
+        static_cast<MaterialShapes::ShapeType>(shape));
 }
 
 void MaterialShapeItem::startMorph(Shape from, Shape to) {
@@ -418,8 +418,7 @@ QPainterPath MaterialShapeItem::buildPath() const {
             path.moveTo(transformPoint(cubic.anchor0X(), cubic.anchor0Y()));
             first = false;
         }
-        path.cubicTo(
-            transformPoint(cubic.control0X(), cubic.control0Y()),
+        path.cubicTo(transformPoint(cubic.control0X(), cubic.control0Y()),
             transformPoint(cubic.control1X(), cubic.control1Y()),
             transformPoint(cubic.anchor1X(), cubic.anchor1Y()));
     }

@@ -332,7 +332,9 @@ std::vector<float> RoundedPolygonShape::verticesFromNumVerts(
     int numVertices, float radius, float centerX, float centerY) {
     std::vector<float> result(static_cast<size_t>(numVertices) * 2);
     for (size_t i = 0; i < static_cast<size_t>(numVertices); ++i) {
-        Point vertex = radialToCartesian(radius, FloatPi / static_cast<float>(numVertices) * 2.0f * static_cast<float>(i));
+        Point vertex = radialToCartesian(
+            radius, FloatPi / static_cast<float>(numVertices) * 2.0f *
+                        static_cast<float>(i));
         result[i * 2] = vertex.x + centerX;
         result[i * 2 + 1] = vertex.y + centerY;
     }

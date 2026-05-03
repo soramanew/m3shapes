@@ -18,8 +18,7 @@ namespace RoundedPolygon {
  * Returns the squared distance between two features.
  * Returns MAX_VALUE if features cannot be mapped (e.g., convex to concave).
  */
-[[nodiscard]] float featureDistSquared(
-    const Feature* f1, const Feature* f2);
+[[nodiscard]] float featureDistSquared(const Feature* f1, const Feature* f2);
 
 /**
  * Returns a representative point for a feature.

@@ -3,8 +3,8 @@
 #include "../morph/Morph.hpp"
 #include "../shapes/MaterialShapes.hpp"
 #include <QEasingCurve>
-#include <QPainterPath>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPropertyAnimation>
 #include <QQuickPaintedItem>
 #include <QVariantList>
@@ -12,7 +12,9 @@
 #include <optional>
 
 namespace RoundedPolygon {
+
 class RoundedPolygonShape;
+
 }
 
 /**
@@ -30,6 +32,7 @@ public:
         const RoundedPolygon::RoundedPolygonShape& shape);
 
     [[nodiscard]] bool isValid() const { return m_shape.has_value(); }
+
     [[nodiscard]] const RoundedPolygon::RoundedPolygonShape& shape() const;
 
     Q_INVOKABLE RoundedPolygonWrapper normalized() const;
@@ -124,7 +127,8 @@ public:
     Q_PROPERTY(Shape shape READ shape WRITE setShape NOTIFY shapeChanged)
     Q_PROPERTY(Shape fromShape READ fromShape WRITE setFromShape NOTIFY
             fromShapeChanged)
-    Q_PROPERTY(Shape toShape READ toShape WRITE setToShape NOTIFY toShapeChanged)
+    Q_PROPERTY(
+        Shape toShape READ toShape WRITE setToShape NOTIFY toShapeChanged)
     Q_PROPERTY(int animationDuration READ animationDuration WRITE
             setAnimationDuration NOTIFY animationDurationChanged)
     Q_PROPERTY(QEasingCurve animationEasing READ animationEasing WRITE
@@ -161,7 +165,8 @@ public:
 
     /**
      * Create a custom polygon from vertices.
-     * @param vertices Array of points (from point() or {x, y, radius, smoothing})
+     * @param vertices Array of points (from point() or {x, y, radius,
+     * smoothing})
      * @param reps Number of rotational repetitions (default 1)
      * @param centerX Center X coordinate (default 0.5)
      * @param centerY Center Y coordinate (default 0.5)
@@ -203,11 +208,13 @@ public:
     /**
      * Create a squircle (superellipse) shape.
      * Uses the equation |x|^n + |y|^n = 1
-     * @param n Exponent controlling squareness (2=ellipse, 4=squircle, higher=more square)
-     * @param segments Number of points to generate (default 64, higher=smoother)
+     * @param n Exponent controlling squareness (2=ellipse, 4=squircle,
+     * higher=more square)
+     * @param segments Number of points to generate (default 64,
+     * higher=smoother)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper squircle(float n = 4.0f,
-        int segments = 64);
+    Q_INVOKABLE static RoundedPolygonWrapper squircle(
+        float n = 4.0f, int segments = 64);
 
     // ========== Path queries ==========
 
@@ -255,50 +262,63 @@ public:
     // ========== Property accessors ==========
 
     [[nodiscard]] Shape shape() const { return m_targetShape; }
+
     void setShape(Shape shape);
 
     [[nodiscard]] Shape fromShape() const { return m_fromShape; }
+
     void setFromShape(Shape shape);
 
     [[nodiscard]] Shape toShape() const { return m_toShape; }
+
     void setToShape(Shape shape);
 
     [[nodiscard]] int animationDuration() const { return m_animationDuration; }
+
     void setAnimationDuration(int duration);
 
     [[nodiscard]] QEasingCurve animationEasing() const {
         return m_animationEasing;
     }
+
     void setAnimationEasing(const QEasingCurve& easing);
 
     [[nodiscard]] QColor color() const { return m_color; }
+
     void setColor(const QColor& color);
 
     [[nodiscard]] qreal implicitSize() const { return m_implicitSize; }
+
     void setImplicitSize(qreal size);
 
     [[nodiscard]] QColor strokeColor() const { return m_strokeColor; }
+
     void setStrokeColor(const QColor& color);
 
     [[nodiscard]] float strokeWidth() const { return m_strokeWidth; }
+
     void setStrokeWidth(float width);
 
     [[nodiscard]] float morphProgress() const { return m_morphProgress; }
+
     void setMorphProgress(float progress);
 
     [[nodiscard]] RoundedPolygonWrapper customShape() const {
         return m_customShape;
     }
+
     void setCustomShape(const RoundedPolygonWrapper& shape);
 
     [[nodiscard]] RoundedPolygonWrapper customFromShape() const {
         return m_customFromShape;
     }
+
     void setCustomFromShape(const RoundedPolygonWrapper& shape);
 
     [[nodiscard]] RoundedPolygonWrapper customToShape() const {
         return m_customToShape;
     }
+
     void setCustomToShape(const RoundedPolygonWrapper& shape);
 
     bool contains(const QPointF& point) const override;

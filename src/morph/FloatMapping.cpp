@@ -68,12 +68,10 @@ float linearMap(const std::vector<float>& xValues,
 
     size_t segmentEndIndex = (segmentStartIndex + 1) % xValues.size();
 
-    float segmentSizeX =
-        positiveModulo(xValues[segmentEndIndex] - xValues[segmentStartIndex],
-            1.0f);
-    float segmentSizeY =
-        positiveModulo(yValues[segmentEndIndex] - yValues[segmentStartIndex],
-            1.0f);
+    float segmentSizeX = positiveModulo(
+        xValues[segmentEndIndex] - xValues[segmentStartIndex], 1.0f);
+    float segmentSizeY = positiveModulo(
+        yValues[segmentEndIndex] - yValues[segmentStartIndex], 1.0f);
 
     float positionInSegment;
     if (segmentSizeX < 0.001f) {

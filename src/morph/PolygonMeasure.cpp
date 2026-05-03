@@ -19,8 +19,8 @@ MeasuredCubic::MeasuredCubic(const Cubic& cubic, float startProgress,
     }
 }
 
-void MeasuredCubic::updateProgressRange(float startProgress,
-    float endProgress) {
+void MeasuredCubic::updateProgressRange(
+    float startProgress, float endProgress) {
     if (endProgress < startProgress) {
         throw std::invalid_argument(
             "endOutlineProgress must be >= startOutlineProgress");
@@ -32,15 +32,16 @@ void MeasuredCubic::updateProgressRange(float startProgress,
 std::pair<MeasuredCubic, MeasuredCubic> MeasuredCubic::cutAtProgress(
     float cutOutlineProgress, const Measurer& measurer) const {
     // Bound the cut progress to this cubic's range
-    float boundedCutProgress = std::clamp(cutOutlineProgress,
-        m_startOutlineProgress, m_endOutlineProgress);
+    float boundedCutProgress = std::clamp(
+        cutOutlineProgress, m_startOutlineProgress, m_endOutlineProgress);
 
     float outlineProgressSize = m_endOutlineProgress - m_startOutlineProgress;
     float progressFromStart = boundedCutProgress - m_startOutlineProgress;
 
     // Calculate relative progress within this cubic
     float relativeProgress = progressFromStart / outlineProgressSize;
-    float t = measurer.findCubicCutPoint(m_cubic, relativeProgress * m_measuredSize);
+    float t =
+        measurer.findCubicCutPoint(m_cubic, relativeProgress * m_measuredSize);
 
     if (t < 0.0f || t > 1.0f) {
         throw std::runtime_error("Cubic cut point must be between 0 and 1");
@@ -49,12 +50,10 @@ std::pair<MeasuredCubic, MeasuredCubic> MeasuredCubic::cutAtProgress(
     // Split the cubic
     auto [c1, c2] = m_cubic.split(t);
 
-    return {
-        MeasuredCubic(c1, m_startOutlineProgress, boundedCutProgress,
-            measurer.measureCubic(c1)),
+    return { MeasuredCubic(c1, m_startOutlineProgress, boundedCutProgress,
+                 measurer.measureCubic(c1)),
         MeasuredCubic(c2, boundedCutProgress, m_endOutlineProgress,
-            measurer.measureCubic(c2))
-    };
+            measurer.measureCubic(c2)) };
 }
 
 // LengthMeasurer implementation
@@ -67,8 +66,8 @@ float LengthMeasurer::findCubicCutPoint(const Cubic& c, float m) const {
     return closestProgressTo(c, m).first;
 }
 
-std::pair<float, float> LengthMeasurer::closestProgressTo(const Cubic& cubic,
-    float threshold) const {
+std::pair<float, float> LengthMeasurer::closestProgressTo(
+    const Cubic& cubic, float threshold) const {
     float total = 0.0f;
     float remainder = threshold;
     Point prev(cubic.anchor0X(), cubic.anchor0Y());
@@ -79,7 +78,8 @@ std::pair<float, float> LengthMeasurer::closestProgressTo(const Cubic& cubic,
         float segment = (point - prev).getDistance();
 
         if (segment >= remainder) {
-            return { progress - (1.0f - remainder / segment) / static_cast<float>(Segments),
+            return { progress - (1.0f - remainder / segment) /
+                                    static_cast<float>(Segments),
                 threshold };
         }
 
@@ -108,8 +108,7 @@ MeasuredPolygon::MeasuredPolygon(std::shared_ptr<Measurer> measurer,
             "First outline progress value must be zero");
     }
     if (outlineProgress.back() != 1.0f) {
-        throw std::invalid_argument(
-            "Last outline progress value must be one");
+        throw std::invalid_argument("Last outline progress value must be one");
     }
 
     float startOutlineProgress = 0.0f;
@@ -159,7 +158,8 @@ MeasuredPolygon MeasuredPolygon::cutAndShift(float cuttingPoint) const {
     retCubics.push_back(b2.cubic());
 
     for (size_t i = 1; i < m_cubics.size(); ++i) {
-        retCubics.push_back(m_cubics[(i + targetIndex) % m_cubics.size()].cubic());
+        retCubics.push_back(
+            m_cubics[(i + targetIndex) % m_cubics.size()].cubic());
     }
     retCubics.push_back(b1.cubic());
 
@@ -175,7 +175,8 @@ MeasuredPolygon MeasuredPolygon::cutAndShift(float cuttingPoint) const {
         } else {
             size_t cubicIndex = (targetIndex + index - 1) % m_cubics.size();
             retOutlineProgress.push_back(positiveModulo(
-                m_cubics[cubicIndex].endOutlineProgress() - cuttingPoint, 1.0f));
+                m_cubics[cubicIndex].endOutlineProgress() - cuttingPoint,
+                1.0f));
         }
     }
 
@@ -187,8 +188,8 @@ MeasuredPolygon MeasuredPolygon::cutAndShift(float cuttingPoint) const {
             feature.feature);
     }
 
-    return MeasuredPolygon(m_measurer, std::move(newFeatures), retCubics,
-        retOutlineProgress);
+    return MeasuredPolygon(
+        m_measurer, std::move(newFeatures), retCubics, retOutlineProgress);
 }
 
 MeasuredPolygon MeasuredPolygon::measurePolygon(
@@ -200,11 +201,10 @@ MeasuredPolygon MeasuredPolygon::measurePolygon(
     for (const auto& feature : polygon.features()) {
         const auto& featureCubics = feature->cubics();
         for (size_t cubicIndex = 0; cubicIndex < featureCubics.size();
-             ++cubicIndex) {
+            ++cubicIndex) {
             // For corners, use the middle cubic as representative
             auto* corner = dynamic_cast<const Corner*>(feature.get());
-            if (corner != nullptr &&
-                cubicIndex == featureCubics.size() / 2) {
+            if (corner != nullptr && cubicIndex == featureCubics.size() / 2) {
                 featureToCubic.emplace_back(feature.get(), cubics.size());
             }
             cubics.push_back(featureCubics[cubicIndex]);
@@ -234,12 +234,13 @@ MeasuredPolygon MeasuredPolygon::measurePolygon(
     // Build features with progress
     std::vector<ProgressableFeature> features;
     for (const auto& [feature, idx] : featureToCubic) {
-        float progress =
-            positiveModulo((outlineProgress[idx] + outlineProgress[idx + 1]) / 2.0f, 1.0f);
+        float progress = positiveModulo(
+            (outlineProgress[idx] + outlineProgress[idx + 1]) / 2.0f, 1.0f);
         features.emplace_back(progress, feature);
     }
 
-    return MeasuredPolygon(measurer, std::move(features), cubics, outlineProgress);
+    return MeasuredPolygon(
+        measurer, std::move(features), cubics, outlineProgress);
 }
 
 } // namespace RoundedPolygon
