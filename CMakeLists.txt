@@ -4,7 +4,6 @@ project(M3Shapes VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_AUTOMOC ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_compile_options(
@@ -21,8 +20,7 @@ endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml ShaderTools)
 
-qt_policy(SET QTP0001 NEW)
-qt_policy(SET QTP0004 NEW)
+qt_standard_project_setup(REQUIRES 6.8)
 
 # Core library
 add_library(m3shapes_core STATIC
@@ -94,8 +92,6 @@ qt_add_qml_module(m3shapes
         src/qml/MaterialShapeItem.cpp
         src/qml/SmoothShapeMaterial.hpp
         src/qml/SmoothShapeMaterial.cpp
-    OUTPUT_DIRECTORY
-        ${QT_QML_OUTPUT_DIRECTORY}/M3Shapes
 )
 
 # Compile the analytic-antialiasing shaders to .qsb via Qt Shader Tools and
@@ -107,21 +103,6 @@ qt_add_shaders(m3shapes "m3shapes_shaders"
         src/shaders/smoothshape.vert
         src/shaders/smoothshape.frag
 )
-
-qt_query_qml_module(m3shapes
-    URI module_uri
-    PLUGIN_TARGET module_plugin_target
-    TARGET_PATH module_target_path
-    QMLDIR module_qmldir
-    TYPEINFO module_typeinfo
-)
-
-set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
-set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
-install(TARGETS m3shapes LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
-install(TARGETS "${module_plugin_target}" LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
-install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
-install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
 target_include_directories(m3shapes PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -135,6 +116,31 @@ target_link_libraries(m3shapes PUBLIC
     m3shapes_morph
     m3shapes_shapes
 )
+
+# Install the backing library and the plugin side by side in the module dir.
+set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
+
+message(STATUS "QML install dir: ${CMAKE_INSTALL_PREFIX}/${INSTALL_QMLDIR}")
+
+qt_query_qml_module(m3shapes
+    PLUGIN_TARGET module_plugin_target
+    TARGET_PATH module_target_path
+    QMLDIR module_qmldir
+    TYPEINFO module_typeinfo
+)
+
+set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
+
+install(TARGETS m3shapes
+    LIBRARY DESTINATION "${module_dir}"
+    RUNTIME DESTINATION "${module_dir}"
+)
+install(TARGETS "${module_plugin_target}"
+    LIBRARY DESTINATION "${module_dir}"
+    RUNTIME DESTINATION "${module_dir}"
+)
+install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
+install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
 # Example application
 option(M3SHAPES_BUILD_EXAMPLES "Build example applications" OFF)
