@@ -18,6 +18,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wunused-lambda-capture)
 endif()
 
+include(GNUInstallDirs)
+
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml ShaderTools)
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -118,7 +120,7 @@ target_link_libraries(m3shapes PUBLIC
 )
 
 # Install the backing library and the plugin side by side in the module dir.
-set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
+set(INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt6/qml" CACHE STRING "QML install dir")
 
 message(STATUS "QML install dir: ${CMAKE_INSTALL_PREFIX}/${INSTALL_QMLDIR}")
 
