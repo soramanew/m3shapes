@@ -1,7 +1,7 @@
 #pragma once
 
-#include <m3shapes/morph/FloatMapping.hpp>
-#include <m3shapes/morph/PolygonMeasure.hpp>
+#include <m3shapes/morph/floatmapping.hpp>
+#include <m3shapes/morph/polygonmeasure.hpp>
 #include <vector>
 
 namespace RoundedPolygon {

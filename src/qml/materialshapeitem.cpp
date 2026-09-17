@@ -1,7 +1,7 @@
-#include <m3shapes/qml/MaterialShapeItem.hpp>
-#include <m3shapes/core/RoundedPolygon.hpp>
-#include <m3shapes/shapes/Shapes.hpp>
-#include <m3shapes/qml/SmoothShapeMaterial.hpp>
+#include <m3shapes/qml/materialshapeitem.hpp>
+#include <m3shapes/core/roundedpolygon.hpp>
+#include <m3shapes/shapes/shapes.hpp>
+#include <m3shapes/qml/smoothshapematerial.hpp>
 #include <QSGGeometry>
 #include <QSGGeometryNode>
 #include <QSGNode>

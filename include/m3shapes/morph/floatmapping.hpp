@@ -1,6 +1,6 @@
 #pragma once
 
-#include <m3shapes/core/Utils.hpp>
+#include <m3shapes/core/utils.hpp>
 #include <vector>
 
 namespace RoundedPolygon {

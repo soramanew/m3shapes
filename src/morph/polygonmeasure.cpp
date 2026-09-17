@@ -1,4 +1,4 @@
-#include <m3shapes/morph/PolygonMeasure.hpp>
+#include <m3shapes/morph/polygonmeasure.hpp>
 #include <QtNumeric>
 #include <algorithm>
 #include <cmath>

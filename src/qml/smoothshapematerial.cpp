@@ -1,4 +1,4 @@
-#include <m3shapes/qml/SmoothShapeMaterial.hpp>
+#include <m3shapes/qml/smoothshapematerial.hpp>
 #include <QMatrix4x4>
 #include <QRect>
 #include <QSGMaterialShader>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <m3shapes/core/RoundedPolygon.hpp>
-#include <m3shapes/morph/FeatureMapping.hpp>
-#include <m3shapes/morph/PolygonMeasure.hpp>
+#include <m3shapes/core/roundedpolygon.hpp>
+#include <m3shapes/morph/featuremapping.hpp>
+#include <m3shapes/morph/polygonmeasure.hpp>
 #include <functional>
 #include <vector>
 

@@ -1,4 +1,4 @@
-#include <m3shapes/morph/FeatureMapping.hpp>
+#include <m3shapes/morph/featuremapping.hpp>
 #include <algorithm>
 #include <limits>
 #include <set>
