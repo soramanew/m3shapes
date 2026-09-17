@@ -24,66 +24,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Quick Qml ShaderTools)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
-# Core library
-add_library(m3shapes_core STATIC
-    include/m3shapes/core/point.hpp
-    include/m3shapes/core/utils.hpp
-    include/m3shapes/core/cornerrounding.hpp
-    include/m3shapes/core/cubic.hpp
-    src/core/cubic.cpp
-    include/m3shapes/core/feature.hpp
-    src/core/feature.cpp
-    include/m3shapes/core/roundedpolygon.hpp
-    src/core/roundedpolygon.cpp
-)
-
-target_include_directories(m3shapes_core PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-
-target_link_libraries(m3shapes_core PUBLIC
-    Qt6::Core
-)
-
-# Morph library
-add_library(m3shapes_morph STATIC
-    include/m3shapes/morph/floatmapping.hpp
-    src/morph/floatmapping.cpp
-    include/m3shapes/morph/polygonmeasure.hpp
-    src/morph/polygonmeasure.cpp
-    include/m3shapes/morph/featuremapping.hpp
-    src/morph/featuremapping.cpp
-    include/m3shapes/morph/morph.hpp
-    src/morph/morph.cpp
-)
-
-target_include_directories(m3shapes_morph PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-
-target_link_libraries(m3shapes_morph PUBLIC
-    m3shapes_core
-)
-
-# Shapes library
-add_library(m3shapes_shapes STATIC
-    include/m3shapes/shapes/shapes.hpp
-    src/shapes/shapes.cpp
-    include/m3shapes/shapes/materialshapes.hpp
-    src/shapes/materialshapes.cpp
-)
-
-target_include_directories(m3shapes_shapes PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-
-target_link_libraries(m3shapes_shapes PUBLIC
-    m3shapes_core
-)
-
 # QML Plugin
 if(NOT DEFINED QT_QML_OUTPUT_DIRECTORY)
     set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
@@ -93,11 +33,36 @@ qt_add_qml_module(m3shapes
     URI M3Shapes
     VERSION 1.0
     SOURCES
+        include/m3shapes/core/point.hpp
+        include/m3shapes/core/utils.hpp
+        include/m3shapes/core/cornerrounding.hpp
+        include/m3shapes/core/cubic.hpp
+        src/core/cubic.cpp
+        include/m3shapes/core/feature.hpp
+        src/core/feature.cpp
+        include/m3shapes/core/roundedpolygon.hpp
+        src/core/roundedpolygon.cpp
+        include/m3shapes/morph/floatmapping.hpp
+        src/morph/floatmapping.cpp
+        include/m3shapes/morph/polygonmeasure.hpp
+        src/morph/polygonmeasure.cpp
+        include/m3shapes/morph/featuremapping.hpp
+        src/morph/featuremapping.cpp
+        include/m3shapes/morph/morph.hpp
+        src/morph/morph.cpp
+        include/m3shapes/shapes/shapes.hpp
+        src/shapes/shapes.cpp
+        include/m3shapes/shapes/materialshapes.hpp
+        src/shapes/materialshapes.cpp
         include/m3shapes/qml/materialshapeitem.hpp
         src/qml/materialshapeitem.cpp
         include/m3shapes/qml/smoothshapematerial.hpp
         src/qml/smoothshapematerial.cpp
 )
+
+# Consumers see a single target, M3Shapes::M3Shapes; the core/morph/shapes
+# split is an internal source layout, not part of the public surface.
+set_target_properties(m3shapes PROPERTIES EXPORT_NAME M3Shapes)
 
 # Compile the analytic-antialiasing shaders to .qsb via Qt Shader Tools and
 # embed them at :/m3shapes/shaders/*.qsb (see SmoothShapeShader).
@@ -122,11 +87,9 @@ target_include_directories(m3shapes PRIVATE
 )
 
 target_link_libraries(m3shapes PUBLIC
+    Qt::Core
     Qt::Quick
     Qt::Qml
-    m3shapes_core
-    m3shapes_morph
-    m3shapes_shapes
 )
 
 # Install the backing library and the plugin side by side in the module dir.
@@ -144,7 +107,7 @@ qt_query_qml_module(m3shapes
 set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
 
 # The backing library goes to the normal library dir so that C++ consumers
-# linking M3Shapes::m3shapes get it from a path the loader already searches;
+# linking M3Shapes::M3Shapes get it from a path the loader already searches;
 # only the plugin has to sit beside the qmldir. Give the plugin an rpath back
 # to the library dir so the QML engine can still load it from anywhere.
 file(RELATIVE_PATH plugin_to_libdir
@@ -155,14 +118,13 @@ set_target_properties("${module_plugin_target}" PROPERTIES
     INSTALL_RPATH "$ORIGIN/${plugin_to_libdir};${CMAKE_INSTALL_FULL_LIBDIR}"
 )
 
-install(TARGETS m3shapes m3shapes_core m3shapes_morph m3shapes_shapes
+install(TARGETS m3shapes
     EXPORT M3ShapesTargets
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
 install(TARGETS "${module_plugin_target}"
-    EXPORT M3ShapesTargets
     LIBRARY DESTINATION "${module_dir}"
     RUNTIME DESTINATION "${module_dir}"
 )
