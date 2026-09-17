@@ -26,19 +26,20 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 # Core library
 add_library(m3shapes_core STATIC
-    src/core/Point.hpp
-    src/core/Utils.hpp
-    src/core/CornerRounding.hpp
-    src/core/Cubic.hpp
+    include/m3shapes/core/Point.hpp
+    include/m3shapes/core/Utils.hpp
+    include/m3shapes/core/CornerRounding.hpp
+    include/m3shapes/core/Cubic.hpp
     src/core/Cubic.cpp
-    src/core/Feature.hpp
+    include/m3shapes/core/Feature.hpp
     src/core/Feature.cpp
-    src/core/RoundedPolygon.hpp
+    include/m3shapes/core/RoundedPolygon.hpp
     src/core/RoundedPolygon.cpp
 )
 
 target_include_directories(m3shapes_core PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(m3shapes_core PUBLIC
@@ -47,18 +48,19 @@ target_link_libraries(m3shapes_core PUBLIC
 
 # Morph library
 add_library(m3shapes_morph STATIC
-    src/morph/FloatMapping.hpp
+    include/m3shapes/morph/FloatMapping.hpp
     src/morph/FloatMapping.cpp
-    src/morph/PolygonMeasure.hpp
+    include/m3shapes/morph/PolygonMeasure.hpp
     src/morph/PolygonMeasure.cpp
-    src/morph/FeatureMapping.hpp
+    include/m3shapes/morph/FeatureMapping.hpp
     src/morph/FeatureMapping.cpp
-    src/morph/Morph.hpp
+    include/m3shapes/morph/Morph.hpp
     src/morph/Morph.cpp
 )
 
 target_include_directories(m3shapes_morph PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(m3shapes_morph PUBLIC
@@ -67,14 +69,15 @@ target_link_libraries(m3shapes_morph PUBLIC
 
 # Shapes library
 add_library(m3shapes_shapes STATIC
-    src/shapes/Shapes.hpp
+    include/m3shapes/shapes/Shapes.hpp
     src/shapes/Shapes.cpp
-    src/shapes/MaterialShapes.hpp
+    include/m3shapes/shapes/MaterialShapes.hpp
     src/shapes/MaterialShapes.cpp
 )
 
 target_include_directories(m3shapes_shapes PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(m3shapes_shapes PUBLIC
@@ -90,9 +93,9 @@ qt_add_qml_module(m3shapes
     URI M3Shapes
     VERSION 1.0
     SOURCES
-        src/qml/MaterialShapeItem.hpp
+        include/m3shapes/qml/MaterialShapeItem.hpp
         src/qml/MaterialShapeItem.cpp
-        src/qml/SmoothShapeMaterial.hpp
+        include/m3shapes/qml/SmoothShapeMaterial.hpp
         src/qml/SmoothShapeMaterial.cpp
 )
 
@@ -107,8 +110,15 @@ qt_add_shaders(m3shapes "m3shapes_shaders"
 )
 
 target_include_directories(m3shapes PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/qml
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+# qmltyperegistrar emits the registration include from the header's basename
+# alone (<MaterialShapeItem.hpp>), so the generated TU needs the qml header
+# directory directly. Private: consumers use <m3shapes/qml/...> instead.
+target_include_directories(m3shapes PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/m3shapes/qml
 )
 
 target_link_libraries(m3shapes PUBLIC
@@ -143,6 +153,9 @@ install(TARGETS "${module_plugin_target}"
 )
 install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
 install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
+
+# Public headers, consumed as <m3shapes/qml/MaterialShapeItem.hpp>.
+install(DIRECTORY include/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Example application
 option(M3SHAPES_BUILD_EXAMPLES "Build example applications" OFF)
