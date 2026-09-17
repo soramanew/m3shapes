@@ -1,4 +1,4 @@
-#include "FloatMapping.hpp"
+#include <m3shapes/morph/FloatMapping.hpp>
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>

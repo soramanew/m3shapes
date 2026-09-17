@@ -1,4 +1,4 @@
-#include "Cubic.hpp"
+#include <m3shapes/core/Cubic.hpp>
 #include <QtNumeric>
 #include <algorithm>
 #include <cmath>

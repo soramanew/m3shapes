@@ -2,8 +2,8 @@
 
 #define CUBIC_H
 
-#include "Point.hpp"
-#include "Utils.hpp"
+#include <m3shapes/core/Point.hpp>
+#include <m3shapes/core/Utils.hpp>
 #include <array>
 #include <utility>
 

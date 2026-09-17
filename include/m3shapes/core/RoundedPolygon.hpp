@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CornerRounding.hpp"
-#include "Feature.hpp"
+#include <m3shapes/core/CornerRounding.hpp>
+#include <m3shapes/core/Feature.hpp>
 #include <memory>
 #include <optional>
 #include <vector>

@@ -1,4 +1,4 @@
-#include "MaterialShapes.hpp"
+#include <m3shapes/shapes/MaterialShapes.hpp>
 #include <cmath>
 
 namespace RoundedPolygon {

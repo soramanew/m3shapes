@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../core/Feature.hpp"
-#include "../core/RoundedPolygon.hpp"
-#include "FloatMapping.hpp"
+#include <m3shapes/core/Feature.hpp>
+#include <m3shapes/core/RoundedPolygon.hpp>
+#include <m3shapes/morph/FloatMapping.hpp>
 #include <memory>
 #include <vector>
 

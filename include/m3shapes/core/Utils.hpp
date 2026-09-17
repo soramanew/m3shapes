@@ -2,7 +2,7 @@
 
 #define UTILS_H
 
-#include "Point.hpp"
+#include <m3shapes/core/Point.hpp>
 #include <algorithm>
 #include <cmath>
 #include <functional>

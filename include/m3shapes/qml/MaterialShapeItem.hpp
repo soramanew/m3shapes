@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../morph/Morph.hpp"
-#include "../shapes/MaterialShapes.hpp"
+#include <m3shapes/morph/Morph.hpp>
+#include <m3shapes/shapes/MaterialShapes.hpp>
 #include <QEasingCurve>
 #include <QPainterPath>
 #include <QPropertyAnimation>

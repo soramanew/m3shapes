@@ -2,7 +2,7 @@
 
 #define FEATURE_H
 
-#include "Cubic.hpp"
+#include <m3shapes/core/Cubic.hpp>
 #include <memory>
 #include <vector>
 

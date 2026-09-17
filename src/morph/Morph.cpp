@@ -1,4 +1,4 @@
-#include "Morph.hpp"
+#include <m3shapes/morph/Morph.hpp>
 #include <algorithm>
 #include <memory>
 #include <optional>

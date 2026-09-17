@@ -1,4 +1,4 @@
-#include "Feature.hpp"
+#include <m3shapes/core/Feature.hpp>
 #include <cmath>
 #include <stdexcept>
 
