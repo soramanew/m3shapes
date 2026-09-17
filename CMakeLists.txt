@@ -143,11 +143,26 @@ qt_query_qml_module(m3shapes
 
 set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
 
-install(TARGETS m3shapes
-    LIBRARY DESTINATION "${module_dir}"
-    RUNTIME DESTINATION "${module_dir}"
+# The backing library goes to the normal library dir so that C++ consumers
+# linking M3Shapes::m3shapes get it from a path the loader already searches;
+# only the plugin has to sit beside the qmldir. Give the plugin an rpath back
+# to the library dir so the QML engine can still load it from anywhere.
+file(RELATIVE_PATH plugin_to_libdir
+    "${CMAKE_INSTALL_PREFIX}/${module_dir}"
+    "${CMAKE_INSTALL_FULL_LIBDIR}"
+)
+set_target_properties("${module_plugin_target}" PROPERTIES
+    INSTALL_RPATH "$ORIGIN/${plugin_to_libdir};${CMAKE_INSTALL_FULL_LIBDIR}"
+)
+
+install(TARGETS m3shapes m3shapes_core m3shapes_morph m3shapes_shapes
+    EXPORT M3ShapesTargets
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
 install(TARGETS "${module_plugin_target}"
+    EXPORT M3ShapesTargets
     LIBRARY DESTINATION "${module_dir}"
     RUNTIME DESTINATION "${module_dir}"
 )
@@ -156,6 +171,35 @@ install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
 # Public headers, consumed as <m3shapes/qml/materialshapeitem.hpp>.
 install(DIRECTORY include/ DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+# CMake package, so consumers can find_package(M3Shapes).
+set(M3SHAPES_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/M3Shapes")
+
+install(EXPORT M3ShapesTargets
+    FILE M3ShapesTargets.cmake
+    NAMESPACE M3Shapes::
+    DESTINATION "${M3SHAPES_CMAKEDIR}"
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    cmake/M3ShapesConfig.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/M3ShapesConfig.cmake"
+    INSTALL_DESTINATION "${M3SHAPES_CMAKEDIR}"
+    PATH_VARS INSTALL_QMLDIR
+)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/M3ShapesConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/M3ShapesConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/M3ShapesConfigVersion.cmake"
+    DESTINATION "${M3SHAPES_CMAKEDIR}"
+)
 
 # Example application
 option(M3SHAPES_BUILD_EXAMPLES "Build example applications" OFF)

@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(Qt6 REQUIRED COMPONENTS Core Quick Qml)
+
+include("${CMAKE_CURRENT_LIST_DIR}/M3ShapesTargets.cmake")
+
+# Import path for the M3Shapes QML module, for QT_QML_IMPORT_PATH / qmllint.
+set_and_check(M3Shapes_QML_IMPORT_PATH "@PACKAGE_INSTALL_QMLDIR@")
+
+check_required_components(M3Shapes)
