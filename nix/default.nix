@@ -17,6 +17,7 @@ in
       root = ./..;
       fileset = lib.fileset.unions [
         ./../CMakeLists.txt
+        ./../include
         ./../src
         ./../examples
       ];
