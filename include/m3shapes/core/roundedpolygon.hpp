@@ -6,7 +6,7 @@
 #include <optional>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * RoundedPolygon allows simple construction of polygonal shapes with optional
@@ -124,4 +124,4 @@ private:
         const Point& p0, const Point& d0, const Point& p1, const Point& d1);
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

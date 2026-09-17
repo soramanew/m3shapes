@@ -10,11 +10,7 @@
 #include <memory>
 #include <optional>
 
-namespace RoundedPolygon {
-
-class RoundedPolygonShape;
-
-}
+namespace m3shapes {
 
 /**
  * QML wrapper for RoundedPolygonShape.
@@ -27,17 +23,16 @@ class RoundedPolygonWrapper {
 
 public:
     RoundedPolygonWrapper() = default;
-    explicit RoundedPolygonWrapper(
-        const RoundedPolygon::RoundedPolygonShape& shape);
+    explicit RoundedPolygonWrapper(const RoundedPolygonShape& shape);
 
     [[nodiscard]] bool isValid() const { return m_shape.has_value(); }
 
-    [[nodiscard]] const RoundedPolygon::RoundedPolygonShape& shape() const;
+    [[nodiscard]] const RoundedPolygonShape& shape() const;
 
-    Q_INVOKABLE RoundedPolygonWrapper normalized() const;
+    Q_INVOKABLE m3shapes::RoundedPolygonWrapper normalized() const;
 
 private:
-    std::optional<RoundedPolygon::RoundedPolygonShape> m_shape;
+    std::optional<RoundedPolygonShape> m_shape;
 };
 
 /**
@@ -123,11 +118,12 @@ public:
     };
     Q_ENUM(Shape)
 
-    Q_PROPERTY(Shape shape READ shape WRITE setShape NOTIFY shapeChanged)
-    Q_PROPERTY(Shape fromShape READ fromShape WRITE setFromShape NOTIFY
-            fromShapeChanged)
-    Q_PROPERTY(
-        Shape toShape READ toShape WRITE setToShape NOTIFY toShapeChanged)
+    Q_PROPERTY(m3shapes::MaterialShapeItem::Shape shape READ shape WRITE
+            setShape NOTIFY shapeChanged)
+    Q_PROPERTY(m3shapes::MaterialShapeItem::Shape fromShape READ fromShape WRITE
+            setFromShape NOTIFY fromShapeChanged)
+    Q_PROPERTY(m3shapes::MaterialShapeItem::Shape toShape READ toShape WRITE
+            setToShape NOTIFY toShapeChanged)
     Q_PROPERTY(int animationDuration READ animationDuration WRITE
             setAnimationDuration NOTIFY animationDurationChanged)
     Q_PROPERTY(QEasingCurve animationEasing READ animationEasing WRITE
@@ -141,12 +137,13 @@ public:
             strokeWidthChanged)
     Q_PROPERTY(float morphProgress READ morphProgress WRITE setMorphProgress
             NOTIFY morphProgressChanged)
-    Q_PROPERTY(RoundedPolygonWrapper customShape READ customShape WRITE
-            setCustomShape NOTIFY customShapeChanged)
-    Q_PROPERTY(RoundedPolygonWrapper customFromShape READ customFromShape WRITE
-            setCustomFromShape NOTIFY customFromShapeChanged)
-    Q_PROPERTY(RoundedPolygonWrapper customToShape READ customToShape WRITE
-            setCustomToShape NOTIFY customToShapeChanged)
+    Q_PROPERTY(m3shapes::RoundedPolygonWrapper customShape READ customShape
+            WRITE setCustomShape NOTIFY customShapeChanged)
+    Q_PROPERTY(m3shapes::RoundedPolygonWrapper customFromShape READ
+            customFromShape WRITE setCustomFromShape NOTIFY
+            customFromShapeChanged)
+    Q_PROPERTY(m3shapes::RoundedPolygonWrapper customToShape READ customToShape
+            WRITE setCustomToShape NOTIFY customToShapeChanged)
 
     explicit MaterialShapeItem(QQuickItem* parent = nullptr);
 
@@ -171,7 +168,7 @@ public:
      * @param centerY Center Y coordinate (default 0.5)
      * @param mirroring Enable mirror symmetry (default false)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper polygon(
+    Q_INVOKABLE static m3shapes::RoundedPolygonWrapper polygon(
         const QVariantList& vertices, int reps = 1, float centerX = 0.5f,
         float centerY = 0.5f, bool mirroring = false);
 
@@ -181,7 +178,7 @@ public:
      * @param radius Corner radius (default 0)
      * @param smoothing Corner smoothing 0-1 (default 0)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper regularPolygon(
+    Q_INVOKABLE static m3shapes::RoundedPolygonWrapper regularPolygon(
         int numVertices, float radius = 0.0f, float smoothing = 0.0f);
 
     /**
@@ -191,7 +188,7 @@ public:
      * @param radius Corner radius (default 0)
      * @param smoothing Corner smoothing (default 0)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper star(int points,
+    Q_INVOKABLE static m3shapes::RoundedPolygonWrapper star(int points,
         float innerRadius = 0.5f, float radius = 0.0f, float smoothing = 0.0f);
 
     /**
@@ -201,8 +198,9 @@ public:
      * @param radius Corner radius (default 0)
      * @param smoothing Corner smoothing (default 0)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper rectangle(float width = 1.0f,
-        float height = 1.0f, float radius = 0.0f, float smoothing = 0.0f);
+    Q_INVOKABLE static m3shapes::RoundedPolygonWrapper rectangle(
+        float width = 1.0f, float height = 1.0f, float radius = 0.0f,
+        float smoothing = 0.0f);
 
     /**
      * Create a squircle (superellipse) shape.
@@ -212,7 +210,7 @@ public:
      * @param segments Number of points to generate (default 64,
      * higher=smoother)
      */
-    Q_INVOKABLE static RoundedPolygonWrapper squircle(
+    Q_INVOKABLE static m3shapes::RoundedPolygonWrapper squircle(
         float n = 4.0f, int segments = 64);
 
     // ========== Path queries ==========
@@ -357,7 +355,7 @@ private:
     void invalidatePath();
     void startMorph(Shape from, Shape to);
     void rebuildMorph();
-    RoundedPolygon::RoundedPolygonShape getShapeForEnum(Shape shape) const;
+    RoundedPolygonShape getShapeForEnum(Shape shape) const;
 
     Shape m_currentShape = Circle;
     Shape m_targetShape = Circle;
@@ -371,7 +369,7 @@ private:
     QColor m_strokeColor = Qt::transparent;
     float m_strokeWidth = 0.0f;
 
-    std::unique_ptr<RoundedPolygon::Morph> m_morph;
+    std::unique_ptr<Morph> m_morph;
     QPropertyAnimation* m_animation = nullptr;
 
     mutable QPainterPath m_cachedPath;
@@ -387,3 +385,5 @@ private:
     int m_batchDepth = 0;
     bool m_pendingRebuild = false;
 };
+
+} // namespace m3shapes

@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 // Forward declarations
 class MeasuredPolygon;
@@ -149,4 +149,4 @@ private:
     std::vector<ProgressableFeature> m_features;
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

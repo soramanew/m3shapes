@@ -5,7 +5,7 @@
 #include <cmath>
 #include <utility>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 struct Point {
     float x = 0.0f;
@@ -102,4 +102,4 @@ struct Point {
         (1.0f - fraction) * start.y + fraction * stop.y);
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 bool progressInRange(float progress, float progressFrom, float progressTo) {
     if (progressTo >= progressFrom) {
@@ -109,4 +109,4 @@ float DoubleMapper::mapBack(float x) const {
 
 const DoubleMapper DoubleMapper::Identity({ { 0.0f, 0.0f }, { 0.5f, 0.5f } });
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

@@ -3,6 +3,8 @@
 #include <QSGGeometry>
 #include <QSGMaterial>
 
+namespace m3shapes {
+
 /**
  * Vertex format for the analytically-antialiased shape mesh.
  *
@@ -60,3 +62,5 @@ public:
         QSGRendererInterface::RenderMode mode) const override;
     [[nodiscard]] int compare(const QSGMaterial* other) const override;
 };
+
+} // namespace m3shapes

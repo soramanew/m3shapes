@@ -2,7 +2,7 @@
 
 #include <m3shapes/shapes/shapes.hpp>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * MaterialShapes provides 35 predefined Material Design shape presets.
@@ -126,4 +126,4 @@ private:
         const RoundedPolygonShape& shape, float degrees);
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

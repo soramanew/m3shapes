@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * CornerRounding defines the rounding applied to a polygon vertex.
@@ -44,4 +44,4 @@ struct CornerRounding {
 inline const CornerRounding CornerRounding::Unrounded =
     CornerRounding(0.0f, 0.0f);
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

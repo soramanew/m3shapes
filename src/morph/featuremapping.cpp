@@ -3,7 +3,7 @@
 #include <limits>
 #include <set>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 namespace {
 
@@ -162,4 +162,4 @@ Point featureRepresentativePoint(const Feature* feature) {
     return Point(x, y);
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Feature represents a group of cubic curves that form part of a polygon's
@@ -102,4 +102,4 @@ private:
     bool m_convex;
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

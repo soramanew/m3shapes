@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 Cubic::Cubic()
     : m_points{ 0, 0, 0, 0, 0, 0, 0, 0 } {}
@@ -239,8 +239,8 @@ void MutableCubic::interpolate(
     const auto& p1 = c1.points();
     const auto& p2 = c2.points();
     for (size_t i = 0; i < 8; ++i) {
-        m_points[i] = RoundedPolygon::interpolate(p1[i], p2[i], progress);
+        m_points[i] = m3shapes::interpolate(p1[i], p2[i], progress);
     }
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

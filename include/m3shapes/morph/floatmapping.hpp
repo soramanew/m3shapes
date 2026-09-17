@@ -3,7 +3,7 @@
 #include <m3shapes/core/utils.hpp>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Checks if the given progress is in the given progress range. Since progress
@@ -68,4 +68,4 @@ private:
     std::vector<float> m_targetValues;
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

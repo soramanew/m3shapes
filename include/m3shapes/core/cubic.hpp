@@ -7,7 +7,7 @@
 #include <array>
 #include <utility>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Cubic represents a cubic Bezier curve with two anchor points and two control
@@ -104,4 +104,4 @@ public:
     void interpolate(const Cubic& c1, const Cubic& c2, float progress);
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

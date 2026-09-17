@@ -1,7 +1,7 @@
 #include <m3shapes/shapes/materialshapes.hpp>
 #include <cmath>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 // Pre-defined corner roundings
 static const CornerRounding cornerRound15(0.15f);
@@ -471,4 +471,4 @@ RoundedPolygonShape MaterialShapes::getShape(ShapeType type) {
     }
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

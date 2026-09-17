@@ -2,7 +2,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 bool Feature::isContinuous(const std::vector<Cubic>& cubics) {
     if (cubics.empty())
@@ -110,4 +110,4 @@ std::unique_ptr<Feature> Corner::reversed() const {
     return std::make_unique<Corner>(reversedCubics, !m_convex);
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

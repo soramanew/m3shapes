@@ -4,6 +4,8 @@
 #include <QSGMaterialShader>
 #include <cstring>
 
+namespace m3shapes {
+
 const QSGGeometry::AttributeSet& smoothShapeAttributes() {
     static const QSGGeometry::Attribute attributes[] = {
         QSGGeometry::Attribute::createWithAttributeType(
@@ -100,3 +102,5 @@ int SmoothShapeMaterial::compare(const QSGMaterial* /*other*/) const {
     // No per-instance state (colour is per-vertex): all instances are equal.
     return 0;
 }
+
+} // namespace m3shapes

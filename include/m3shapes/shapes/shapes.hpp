@@ -2,7 +2,7 @@
 
 #include <m3shapes/core/roundedpolygon.hpp>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Factory functions for creating common polygon shapes.
@@ -96,4 +96,4 @@ private:
     Shapes() = default;
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

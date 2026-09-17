@@ -6,7 +6,7 @@
 #include <functional>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Morph is used to animate between start and end polygon objects.
@@ -85,4 +85,4 @@ private:
         const RoundedPolygonShape& p1, const RoundedPolygonShape& p2);
 };
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

@@ -5,7 +5,7 @@
 #include <optional>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 // RoundedPolygonShape implementation
 
@@ -239,7 +239,7 @@ void RoundedPolygonShape::buildCubics() {
 
 RoundedPolygonShape RoundedPolygonShape::transformed(
     const PointTransformer& f) const {
-    auto transformedCenter = ::RoundedPolygon::transformed(m_center, f);
+    auto transformedCenter = ::m3shapes::transformed(m_center, f);
     std::vector<std::unique_ptr<Feature>> transformedFeatures;
     for (const auto& feature : m_features) {
         transformedFeatures.push_back(feature->transformed(f));
@@ -468,4 +468,4 @@ std::optional<Point> RoundedCorner::lineIntersection(
     return p0 + d0 * k;
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

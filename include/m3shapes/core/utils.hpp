@@ -7,7 +7,7 @@
 #include <cmath>
 #include <functional>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 // Constants
 constexpr float FloatPi = 3.14159265358979323846f;
@@ -100,4 +100,4 @@ using PointTransformer = std::function<TransformResult(float x, float y)>;
     return Point(result.x, result.y);
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

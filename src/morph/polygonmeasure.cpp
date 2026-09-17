@@ -4,7 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 // MeasuredCubic implementation
 
@@ -244,4 +244,4 @@ MeasuredPolygon MeasuredPolygon::measurePolygon(
         measurer, std::move(features), cubics, outlineProgress);
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

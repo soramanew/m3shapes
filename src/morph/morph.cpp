@@ -4,7 +4,7 @@
 #include <optional>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 Morph::Morph(const RoundedPolygonShape& start, const RoundedPolygonShape& end)
     : m_start(start)
@@ -174,4 +174,4 @@ std::vector<std::pair<Cubic, Cubic>> Morph::match(
     return result;
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

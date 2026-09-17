@@ -2,7 +2,7 @@
 #include <cmath>
 #include <stdexcept>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 RoundedPolygonShape Shapes::circle(
     int numVertices, float radius, float centerX, float centerY) {
@@ -189,4 +189,4 @@ RoundedPolygonShape Shapes::pillStar(float width, float height,
     }
 }
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

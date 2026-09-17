@@ -4,7 +4,7 @@
 #include <m3shapes/morph/polygonmeasure.hpp>
 #include <vector>
 
-namespace RoundedPolygon {
+namespace m3shapes {
 
 /**
  * Creates a DoubleMapper that maps between features of two shapes.
@@ -25,4 +25,4 @@ namespace RoundedPolygon {
  */
 [[nodiscard]] Point featureRepresentativePoint(const Feature* feature);
 
-} // namespace RoundedPolygon
+} // namespace m3shapes

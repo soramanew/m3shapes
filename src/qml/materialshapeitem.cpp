@@ -12,7 +12,7 @@
 #include <numbers>
 #include <vector>
 
-using namespace RoundedPolygon;
+namespace m3shapes {
 
 // ========== RoundedPolygonWrapper ==========
 
@@ -973,3 +973,5 @@ QSGNode* MaterialShapeItem::updatePaintNode(
     m_geometryDirty = false;
     return root;
 }
+
+} // namespace m3shapes
